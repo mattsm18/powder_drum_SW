@@ -4,7 +4,7 @@ from comms.protocol import *
 def test_build_get():
     packet = build_get(0x01)
     assert packet[0] == SOF
-    assert packet[2] == MsgID.CMD_GET
+    assert packet[2] == MsgID.MSG_CMD_GET
     assert packet[5] == 0x01  # parameter_id
 
 def test_build_set():
@@ -20,6 +20,6 @@ def test_roundtrip():
     raw    = build_set(0x01, 45.5)
     parsed = parse_packet(raw)
     assert parsed is not None
-    assert parsed.msg_id == MsgID.CMD_SET
+    assert parsed.msg_id == MsgID.MSG_CMD_SET
     _, value = parse_float_payload(parsed.payload)
     assert abs(value - 45.5) < 0.001

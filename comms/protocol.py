@@ -3,8 +3,7 @@
 # Author: Matthew Smith 22173112
 # Date: 6/05/26
 # Purpose: 
-# - Handle protocol implementation for Serial comms with Arduino Nano
-# - use config/params.json for parameters
+# - Handle low level protocol implementation for Serial comms with Arduino Nano
 
 import struct
 from enum import IntEnum
@@ -13,18 +12,18 @@ from dataclasses import dataclass
 ### Data Representation
 #######################
 class MsgID(IntEnum):
-    MSG_CMD_SET     = 0x01,
-    MSG_CMD_GET     = 0x02,
-    MSG_STATUS      = 0x10,
-    MSG_ACK         = 0xEE,
-    MSG_NACK        = 0xEF,
-    MSG_HEARTBEAT   = 0xFF,
+    MSG_CMD_SET     = 0x01
+    MSG_CMD_GET     = 0x02
+    MSG_STATUS      = 0x10
+    MSG_ACK         = 0xEE
+    MSG_NACK        = 0xEF
+    MSG_HEARTBEAT   = 0xFF
 
 class NackError(IntEnum):
-    ERR_VERSION_MISMATCH    = 0x01,
-    ERR_BAD_CRC             = 0x02,
-    ERR_UNKNOWN_MSG         = 0x03,
-    ERR_BAD_LEN             = 0x04,
+    ERR_VERSION_MISMATCH    = 0x01
+    ERR_BAD_CRC             = 0x02
+    ERR_UNKNOWN_MSG         = 0x03
+    ERR_BAD_LEN             = 0x04
 
 @dataclass
 class Packet:
@@ -60,7 +59,7 @@ def build_get(parameter_id: int) -> bytes:
 def build_set(parameter_id: int, value: float) -> bytes:
 
     # Build payload with value as IEEE 754 Float (Little-Endian <f)
-    payload = bytes([parameter_id] + struct.pack('<f', value))
+    payload = bytes([parameter_id]) + struct.pack('<f', value)
     return build_packet(MsgID.MSG_CMD_SET, DIR_PC_TO_MCU, payload)
 
 ### Parsing
