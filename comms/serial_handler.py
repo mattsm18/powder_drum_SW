@@ -48,8 +48,10 @@ class SerialHandler:
         buffer = bytes()
         while self._running:
             data = self._serial.read(self._serial.in_waiting or 1)
-            if data:
-                print(f"RAW: {data.hex(' ').upper()}")
+
+            ## debug
+            #if data: print(f"RAW: {data.hex(' ').upper()}")
+
             buffer += data
             packet, buffer = self._try_parse(buffer)
             if packet:

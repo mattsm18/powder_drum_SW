@@ -7,15 +7,16 @@
 from PyQt6.QtWidgets import QMainWindow, QTabWidget
 from PyQt6.QtCore import Qt
 
+from comms.serial_handler import SerialHandler
 from gui.camera_tab   import CameraTab
 from gui.control_tab  import ControlTab
 from gui.config_tab import ConfigTab
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, handler):
+    def __init__(self, handler: SerialHandler):
         super().__init__()
-        self._handler = handler
+        self._serial_handler = handler
 
         self.setWindowTitle("Powder Drum Control")
         self.setFixedSize(800, 480)
@@ -26,9 +27,12 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self._tabs)
 
         # Instantiate tabs — all share the same handler
-        self._camera_tab   = CameraTab(handler)
-        self._control_tab  = ControlTab(handler)
-        self._config_tab = ConfigTab(handler)
+        self._camera_tab   = CameraTab(self._serial_handler)
+        self._control_tab  = ControlTab(self._serial_handler)
+        self._config_tab = ConfigTab(self._serial_handler)
+
+        # REPLACE LATER ON!!!
+        self._control_tab.on_connected()
 
         self._tabs.addTab(self._camera_tab,   "📷  Camera")
         self._tabs.addTab(self._control_tab,  "⚙️  Control")
@@ -36,6 +40,6 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         # Zero motor and stop handler cleanly on close
-        self._handler.set(0x01, 0.0)
-        self._handler.stop()
+        self._serial_handler.set(0x01, 0.0)
+        self._serial_handler.stop()
         event.accept()

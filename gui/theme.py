@@ -41,7 +41,7 @@ DARK_THEME = """
         color: #E0E0E0;
         border: 1px solid #444444;
         border-radius: 6px;
-        padding: 10px 16px;
+        padding: 8px 14px;
         font-size: 13px;
         min-height: 48px;
         min-width: 48px;
@@ -51,9 +51,8 @@ DARK_THEME = """
         color: #FFFFFF;
     }
     QPushButton:checked {
-        background-color: #005588;
+        background-color: #00AAFF;
         color: #FFFFFF;
-        border: 1px solid #00AAFF;
     }
 
     /* Sliders */

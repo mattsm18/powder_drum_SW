@@ -22,10 +22,10 @@ if __name__ == "__main__":
     app.setStyleSheet(DARK_THEME)
 
     # Single shared serial handler — passed to all tabs
-    handler = SerialHandler(port=PORT, baud=BAUD)
-    handler.start()
+    serial_handler = SerialHandler(port=PORT, baud=BAUD)
+    serial_handler.start()
 
-    window = MainWindow(handler)
+    window = MainWindow(serial_handler)
     window.show()
 
     sys.exit(app.exec())
