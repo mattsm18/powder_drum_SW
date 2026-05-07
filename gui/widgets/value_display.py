@@ -17,8 +17,8 @@ class ValueDisplay(QWidget):
 
     def _build_ui(self, label: str, unit: str, colour: str):
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(8, 4, 8, 4)
-        layout.setSpacing(8)
+        layout.setContentsMargins(8, 4, 0, 4)
+        layout.setSpacing(4)
 
         self._label = QLabel(label)
         self._label.setStyleSheet("color: #AAAAAA; font-size: 12px;")

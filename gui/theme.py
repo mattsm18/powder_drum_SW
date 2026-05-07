@@ -23,6 +23,7 @@ DARK_THEME = """
         padding: 10px 24px;
         font-size: 14px;
         border: none;
+        min-height: 40px;
         min-width: 218px;
     }
     QTabBar::tab:selected {
@@ -43,7 +44,7 @@ DARK_THEME = """
         border-radius: 6px;
         padding: 8px 14px;
         font-size: 13px;
-        min-height: 48px;
+        min-height: 32px;
         min-width: 48px;
     }
     QPushButton:pressed {

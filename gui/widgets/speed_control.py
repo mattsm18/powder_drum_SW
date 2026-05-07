@@ -42,7 +42,7 @@ class SpeedControl(QWidget):
             background-color: #2A2A2A;
             border: 1px solid #444444;
             border-radius: 6px;
-            min-height: 20px;
+            min-height: 30px;
         """)
         self._value_btn.clicked.connect(self._open_numpad)
         layout.addWidget(self._value_btn)
@@ -51,7 +51,6 @@ class SpeedControl(QWidget):
         control_layout.setSpacing(8)
 
         self._minus_btn = QPushButton("−")
-        self._minus_btn.setFixedSize(48, 48)
         self._minus_btn.setFont(QFont("Segoe UI", 16))
         self._minus_btn.setStyleSheet("min-height: 0px; min-width: 0px;")
         self._minus_btn.clicked.connect(self._step_down)
@@ -63,7 +62,7 @@ class SpeedControl(QWidget):
         self._slider.valueChanged.connect(self._on_slider_changed)
 
         self._plus_btn = QPushButton("+")
-        self._plus_btn.setFixedSize(48, 48)
+        self._plus_btn.setFixedSize(56, 56)
         self._plus_btn.setFont(QFont("Segoe UI", 16))
         self._plus_btn.setStyleSheet("min-height: 0px; min-width: 0px;")
         self._plus_btn.clicked.connect(self._step_up)
