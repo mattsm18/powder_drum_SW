@@ -12,9 +12,8 @@ from PyQt6.QtGui import QFont
 from gui.widgets.numpad import NumpadDialog
 from gui.theme import COLOUR_BLUE
 
-MIN_RADS  = 0.0
-MAX_RADS  = 30.0
-STEP_RADS = 0.5
+from config import get_parameter, get_ui_config
+
 STOP_THRESHOLD = 0.05
 
 class SpeedControl(QWidget):
@@ -23,7 +22,10 @@ class SpeedControl(QWidget):
     def __init__(self):
         super().__init__()
 
-        self._motor_rads = 0.0
+        self._ui_config = get_ui_config()
+        self._setpoint = get_parameter("setpoint")
+
+        self._internal_setpoint = 0.0
         self._motor_stopped = False  # state tracking
 
         self._build_ui()
@@ -44,6 +46,7 @@ class SpeedControl(QWidget):
             border-radius: 6px;
             min-height: 30px;
         """)
+        
         self._value_btn.clicked.connect(self._open_numpad)
         layout.addWidget(self._value_btn)
 
@@ -57,7 +60,7 @@ class SpeedControl(QWidget):
 
         self._slider = QSlider(Qt.Orientation.Horizontal)
         self._slider.setMinimum(0)
-        self._slider.setMaximum(int(MAX_RADS * 100))
+        self._slider.setMaximum(int(self._setpoint.max * 100))
         self._slider.setValue(0)
         self._slider.valueChanged.connect(self._on_slider_changed)
 
@@ -73,9 +76,9 @@ class SpeedControl(QWidget):
         layout.addLayout(control_layout)
 
         range_layout = QHBoxLayout()
-        range_layout.addWidget(QLabel(f"{MIN_RADS:.0f}"))
+        range_layout.addWidget(QLabel(f"{self._setpoint.min:.0f}"))
         range_layout.addStretch()
-        range_layout.addWidget(QLabel(f"{MAX_RADS:.0f} rad/s"))
+        range_layout.addWidget(QLabel(f"{self._setpoint.max:.0f} {self._setpoint.unit}"))
         layout.addLayout(range_layout)
 
         self._stop_motor_btn = QPushButton("STOP")
@@ -88,23 +91,22 @@ class SpeedControl(QWidget):
 
     # ---------------- CORE CONTROL ----------------
 
-    def _set_rads(self, rads: float, from_slider: bool = False):
-        rads = max(MIN_RADS, min(MAX_RADS, rads))
-        self._motor_rads = rads
-
-        self._value_btn.setText(f"{rads:.1f} rad/s")
+    def _set_speed(self, value: float, from_slider: bool = False):
+        value = max(self._setpoint.min, min(self._setpoint.max, value))
+        self._internal_setpoint = value
+        self.set_display_value(value)
 
         if not from_slider:
             self._slider.blockSignals(True)
-            self._slider.setValue(int(rads * 100))
+            self._slider.setValue(int(value * 100))
             self._slider.blockSignals(False)
 
-        self.speed_changed.emit(rads)
+        self.speed_changed.emit(value)
 
     # ---------------- STOP BUTTON (USER INITIATED) ----------------
 
     def _on_stop_motor_pressed(self):
-        self._set_rads(0.0)
+        self._set_speed(0.0)
         self._motor_stopped = False  # waiting for real confirmation
 
         self._stop_motor_btn.setText("STOPPING")
@@ -113,41 +115,33 @@ class SpeedControl(QWidget):
         )
         self._stop_motor_btn.setEnabled(False)
 
-    # ---------------- EXTERNAL STATE UPDATE (FROM ENCODER) ----------------
-
-    def update_velocity_state(self, velocity: float):
-
-        if abs(velocity) < STOP_THRESHOLD:
-            self._reset_stop_btn()
-
     def _reset_stop_btn(self):
         self._stop_motor_btn.setText("STOP")
         self._stop_motor_btn.setStyleSheet("background-color: #b53131; color: #FFFFFF;")
         self._stop_motor_btn.setEnabled(True)
 
+    # ---------------- EXTERNAL STATE UPDATES ----------------
+    
+    def set_display_value(self, value: float):
+        self._value_btn.setText(f"{value:.1f} {self._setpoint.unit}")
+
+    def is_motor_stopped(self, velocity: float):
+        if abs(velocity) < STOP_THRESHOLD: self._reset_stop_btn()
+
     # ---------------- INPUT HANDLING ----------------
 
-    def _on_slider_changed(self, raw: int):
-        self._set_rads(raw / 100.0, from_slider=True)
-
-    def _step_up(self):
-        self._set_rads(self._motor_rads + STEP_RADS)
-
-    def _step_down(self):
-        self._set_rads(self._motor_rads - STEP_RADS)
-
+    def _on_slider_changed(self, raw: int): self._set_speed(raw / 100.0, from_slider=True)
+    def _step_up(self): self._set_speed(self._internal_setpoint + self._ui_config.get("plus_minus_step"))
+    def _step_down(self): self._set_speed(self._internal_setpoint - self._ui_config.get("plus_minus_step"))
     def _open_numpad(self):
+
         dlg = NumpadDialog(
-            self,
-            "Target Motor Speed",
-            self._motor_rads,
-            MIN_RADS,
-            MAX_RADS
+            self, 
+            "Target Motor Speed", 
+            self._internal_setpoint, 
+            self._setpoint.min, 
+            self._setpoint.max
         )
+
         if dlg.exec() and dlg.get_value() is not None:
-            self._set_rads(dlg.get_value())
-
-    # ---------------- PUBLIC API ----------------
-
-    def get_rads(self) -> float:
-        return self._motor_rads
+            self._set_speed(dlg.get_value())

@@ -1,0 +1,152 @@
+{
+    "version": "1.0",
+
+    "serial": {
+        "default_port": "",
+        "default_baud": 115200,
+        "timeout_ms": 100,
+        "max_retries": 3,
+        "baud_options": [9600, 57600, 115200, 230400]
+    },
+
+    "parameters": [
+        {
+            "id": "0x00",
+            "name": "protocolVersion",
+            "label": "Protocol Version",
+            "access": ["r", "w"],
+            "type": "float",
+            "default": 1.0,
+            "min": 0.0,
+            "max": 10.0,
+            "unit": "",
+            "group": "system"
+        },
+        {
+            "id": "0x01",
+            "name": "setpoint",
+            "label": "Setpoint",
+            "access": ["r", "w"],
+            "type": "float",
+            "default": 0.0,
+            "min": 0.0,
+            "max": 30.0,
+            "unit": "rad/s",
+            "group": "motor"
+        },
+        {
+            "id": "0x02",
+            "name": "accelRate",
+            "label": "Accel Rate",
+            "access": ["r", "w"],
+            "type": "float",
+            "default": 5.0,
+            "min": 0.1,
+            "max": 50.0,
+            "unit": "rad/s^2",
+            "group": "motor"
+        },
+        {
+            "id": "0x03",
+            "name": "rampedSetpoint",
+            "label": "Ramped Setpoint",
+            "access": ["r"],
+            "type": "float",
+            "default": 0.0,
+            "min": 0.0,
+            "max": 70.0,
+            "unit": "rad/s",
+            "group": "motor"
+        },
+        {
+            "id": "0x10",
+            "name": "encoderAngularVelocity",
+            "label": "Encoder Angular Velocity",
+            "access": ["r"],
+            "type": "float",
+            "default": 0.0,
+            "min": -100.0,
+            "max": 100.0,
+            "unit": "rad/s",
+            "group": "motor"
+        },
+        {
+            "id": "0x20",
+            "name": "Kp",
+            "label": "Kp",
+            "access": ["r", "w"],
+            "type": "float",
+            "default": 1.0,
+            "min": 0.0,
+            "max": 50.0,
+            "unit": "",
+            "group": "motor"
+        },
+        {
+            "id": "0x21",
+            "name": "Ki",
+            "label": "Ki",
+            "access": ["r", "w"],
+            "type": "float",
+            "default": 2.0,
+            "min": 0.0,
+            "max": 50.0,
+            "unit": "",
+            "group": "motor"
+        },
+        {
+            "id": "0x23",
+            "name": "integralLimit",
+            "label": "Integral Limit",
+            "access": ["r", "w"],
+            "type": "float",
+            "default": 20.0,
+            "min": 0.0,
+            "max": 100.0,
+            "unit": "",
+            "group": "motor"
+        },
+        {
+            "id": "0x24",
+            "name": "deadband",
+            "label": "Deadband",
+            "access": ["r", "w"],
+            "type": "float",
+            "default": 0.0,
+            "min": 0.0,
+            "max": 5.0,
+            "unit": "rad/s",
+            "group": "motor"
+        },
+        {
+            "id": "0x30",
+            "name": "lights",
+            "label": "Lights",
+            "access": ["r", "w"],
+            "type": "bool",
+            "default": 0.0,
+            "min": 0.0,
+            "max": 1.0,
+            "unit": "",
+            "group": "io"
+        }
+    ],
+
+    "ui": {
+        "plus_minus_step": 0.5,
+        "poll_rate_ms": 50,
+        "history_length": 100
+    },
+
+    "camera": {
+        "stream_port": 8080,
+        "stream_quality": 80,
+        "resolution": [640, 480],
+        "fps": 30
+    },
+
+    "vision": {
+        "method": "canny",
+        "available_methods": ["canny", "hough", "contour"]
+    }
+}

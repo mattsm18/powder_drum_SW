@@ -13,8 +13,6 @@ from comms.serial_handler import SerialHandler
 from gui.main_window      import MainWindow
 from gui.theme            import DARK_THEME
 
-PORT = 'COM5'
-BAUD = 115200
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -22,10 +20,12 @@ if __name__ == "__main__":
     app.setStyleSheet(DARK_THEME)
 
     # Single shared serial handler — passed to all tabs
-    serial_handler = SerialHandler(port=PORT, baud=BAUD)
-    serial_handler.start()
-
+    serial_handler = SerialHandler()
     window = MainWindow(serial_handler)
+
+    # Uncomment for Linux Kiosk Target
+    #window.showFullScreen()
+    #app.setOverrideCursor(Qt.CursorShape.BlankCursor)
     window.show()
 
     sys.exit(app.exec())

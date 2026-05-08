@@ -127,6 +127,23 @@ DARK_THEME = """
     QFrame[frameShape="5"] {
         color: #333333;
     }
+
+    /* List Widget */
+    QListWidget {
+    background-color: #1E1E1E;
+    border: none;
+    outline: none;
+    }
+    QListWidget::item {
+        height: 50px;
+        padding-left: 15px;
+        color: #AAAAAA;
+    }
+    QListWidget::item:selected {
+        background-color: #2D2D2D;
+        color: white;
+        border-left: 4px solid #00AAFF;
+    }
 """
 
 # Colour tokens for use in Python code

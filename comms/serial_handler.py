@@ -11,40 +11,54 @@ import threading
 from comms.protocol import *
 
 class SerialHandler:
-    def __init__(self, port: str, baud: int = 115200):
-
-        self._callbacks = {}   # parameter_id -> callable
+    def __init__(self):
+        self._callbacks = {}
         self._running   = False
-        self._thread    = threading.Thread(target=self._run, daemon=True)
+        self._thread    = None
+        self._serial    = None
+        self._port      = None
+        self._baud      = None
 
+    def connect(self, port: str, baud: int = 115200):
+        self._port = port
+        self._baud = baud
+        self._thread = None
         self._serial = serial.Serial(
             port=port,
             baudrate=baud,
             timeout=0.1,
-            dsrdtr=False,      # disable DSR/DTR
-            rtscts=False       # disable RTS/CTS
+            dsrdtr=False,
+            rtscts=False
         )
-
-        self._serial.dtr = False  # prevent reset on connect
+        self._serial.dtr = False
 
     def start(self):
         self._running = True
+        self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
+
+    def is_connected(self) -> bool:
+        return self._serial is not None and self._serial.is_open
 
     def stop(self):
         self._running = False
-        self._serial.close()
-
+        if self._serial:
+            self._serial.close()
+            self._serial = None  # ← release the port fully
+            
     def on_parameter(self, parameter_id: int, callback):
         self._callbacks[parameter_id] = callback
 
     def get(self, parameter_id: int):
-        self._serial.write(build_get(parameter_id))
+        if self.is_connected():
+            self._serial.write(build_get(parameter_id))
 
     def set(self, parameter_id: int, value: float):
-        self._serial.write(build_set(parameter_id, value))
+        if self.is_connected():
+            self._serial.write(build_set(parameter_id, value))
 
     def _run(self):
+
         buffer = bytes()
         while self._running:
             data = self._serial.read(self._serial.in_waiting or 1)
