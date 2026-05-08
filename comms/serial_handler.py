@@ -33,6 +33,8 @@ class SerialHandler:
         self._serial.dtr = False
 
     def start(self):
+        if not self._serial or not self._serial.is_open:
+            return
         self._running = True
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
@@ -42,6 +44,9 @@ class SerialHandler:
 
     def stop(self):
         self._running = False
+        if self._thread and self._thread.is_alive():
+            self._thread.join(timeout=0.5)
+        self._thread = None
         if self._serial:
             self._serial.close()
             self._serial = None  # ← release the port fully
@@ -61,6 +66,8 @@ class SerialHandler:
 
         buffer = bytes()
         while self._running:
+            if not self._serial or not self._serial.is_open:
+                break
             data = self._serial.read(self._serial.in_waiting or 1)
 
             ## debug

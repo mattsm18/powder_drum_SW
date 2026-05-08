@@ -287,6 +287,7 @@ class ConfigTab(QWidget):
             # Call serial connection
             self._serial_handler.connect(port, baud) 
             self._serial_handler.start()
+            self._connected = True
 
             # Update UI
             self._connect_btn.setText("Disconnect")
@@ -299,6 +300,7 @@ class ConfigTab(QWidget):
         except Exception as e:
             import traceback
             traceback.print_exc() 
+            self._connected = False
             self._connect_btn.setChecked(False)
             self._status_label.setText(f"⬤  Failed: {e}")
             self._status_label.setStyleSheet(f"color: {COLOUR_RED};")
@@ -307,6 +309,7 @@ class ConfigTab(QWidget):
         
         # Call serial disconnection
         self._serial_handler.stop()
+        self._connected = False
         time.sleep(0.5)  # ← give Windows time to release the port
 
         # Update UI
