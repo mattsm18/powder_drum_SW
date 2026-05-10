@@ -5,7 +5,7 @@
 
     "motor": {
         "drum_to_motor_ratio": 4.0,
-        "motor_stop_threshold": 0.05
+        "motor_stop_threshold": 0.1
     },
 
     "serial": {
@@ -19,7 +19,7 @@
     "ui": {
         "plus_minus_step": 0.5,
         "poll_rate_ms": 50,
-        "history_length": 100
+        "history_length": 120
     },
 
     "camera": {
@@ -86,7 +86,7 @@
         {
             "id": "0x10",
             "name": "encoderAngularVelocity",
-            "label": "Encoder Angular Velocity",
+            "label": "Angular Velocity",
             "access": ["r"],
             "type": "float",
             "default": 0.0,

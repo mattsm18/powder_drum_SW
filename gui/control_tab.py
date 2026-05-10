@@ -116,8 +116,9 @@ class ControlTab(QWidget):
         self._plot.setFixedHeight(292)
         self._plot.setYRange(self._setpoint.min - 10, self._setpoint.max + 10)
 
-        self._plot.setTitle("Realtime Motor Angular Velocity")
+        self._plot.setTitle("Setpoint vs Measured Angular Velocity")
         self._plot.setLabel('left', f"{self._velocity.label} ({self._velocity.unit})")
+        self._plot.setMouseEnabled(x=False, y=False)
 
         hz = 1000 / self._ui_config.get("poll_rate_ms")
         self._plot.setLabel('bottom', f"samples ({hz:.1f} Hz)")
