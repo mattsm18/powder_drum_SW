@@ -42,7 +42,7 @@
             "type": "float",
             "default": 5.0,
             "min": 0.1,
-            "max": 50.0,
+            "max": 20.0,
             "unit": "rad/s^2",
             "group": "motor"
         },
@@ -78,7 +78,7 @@
             "type": "float",
             "default": 1.0,
             "min": 0.0,
-            "max": 50.0,
+            "max": 20.0,
             "unit": "",
             "group": "motor"
         },
@@ -90,7 +90,7 @@
             "type": "float",
             "default": 2.0,
             "min": 0.0,
-            "max": 50.0,
+            "max": 10.0,
             "unit": "",
             "group": "motor"
         },

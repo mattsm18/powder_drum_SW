@@ -21,7 +21,7 @@ from PyQt6.QtWidgets import (
     QMessageBox
 )
 
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import Qt, QObject, pyqtSignal
 from PyQt6.QtGui import QFont
 
 from gui.widgets.param_row import ParamRow
@@ -30,6 +30,11 @@ from gui.theme import COLOUR_GREEN, COLOUR_RED, COLOUR_BLUE
 from config import get_parameters, get_ui_config
 
 import time
+
+"""Own QObject so link-lost can be emitted from the serial thread (queued to GUI thread)."""
+class _SerialLinkNotifier(QObject):
+
+    link_lost = pyqtSignal()
 
 class ConfigTab(QWidget):
 
@@ -42,7 +47,8 @@ class ConfigTab(QWidget):
         self._config_ui = get_ui_config()
         self._serial_handler = handler
 
-        
+        self._link_notifier = _SerialLinkNotifier()
+        self._link_notifier.link_lost.connect(self._on_serial_link_lost)
 
         # Internal memory
         self._connected = False
@@ -130,16 +136,20 @@ class ConfigTab(QWidget):
         self._connect_btn.setCheckable(True)
         self._connect_btn.clicked.connect(self._on_connect_clicked)
 
-        conn_layout.addWidget(QLabel("Port:"))
-        conn_layout.addWidget(self._port_combo, stretch=2)
+        # Row 1: port, baud, refresh
+        selectors_layout = QHBoxLayout()
+        selectors_layout.addWidget(QLabel("Port:"))
+        selectors_layout.addWidget(self._port_combo, stretch=2)
+        selectors_layout.addWidget(QLabel("Baud:"))
+        selectors_layout.addWidget(self._baud_combo, stretch=1)
+        selectors_layout.addWidget(refresh_btn)
 
-        conn_layout.addWidget(QLabel("Baud:"))
-        conn_layout.addWidget(self._baud_combo, stretch=1)
+        # Row 2: connect button full width
+        connect_layout = QHBoxLayout()
+        connect_layout.addWidget(self._connect_btn)
 
-        conn_layout.addWidget(refresh_btn)
-        conn_layout.addWidget(self._connect_btn, stretch=1)
-
-        layout.addLayout(conn_layout)
+        layout.addLayout(selectors_layout)
+        layout.addLayout(connect_layout)
 
         self._status_label = QLabel("⬤  Disconnected")
         self._status_label.setStyleSheet(f"color: {COLOUR_RED}; font-size: 13px;")
@@ -285,7 +295,8 @@ class ConfigTab(QWidget):
 
         try:
             # Call serial connection
-            self._serial_handler.connect(port, baud) 
+            self._serial_handler.connect(port, baud)
+            self._serial_handler.set_link_lost_callback(self._link_notifier.link_lost.emit)
             self._serial_handler.start()
             self._connected = True
 
@@ -305,8 +316,13 @@ class ConfigTab(QWidget):
             self._status_label.setText(f"⬤  Failed: {e}")
             self._status_label.setStyleSheet(f"color: {COLOUR_RED};")
 
-    def _disconnect(self):
-        
+    def _on_serial_link_lost(self):
+        if not self._connected:
+            return
+        self._disconnect(status_text="⬤  Connection lost — cable unplugged or device removed")
+
+    def _disconnect(self, status_text: str | None = None):
+        self._serial_handler.clear_link_lost_callback()
         # Call serial disconnection
         self._serial_handler.stop()
         self._connected = False
@@ -315,7 +331,7 @@ class ConfigTab(QWidget):
         # Update UI
         self._connect_btn.setText("Connect")
         self._connect_btn.setChecked(False)
-        self._status_label.setText("⬤  Disconnected")
+        self._status_label.setText(status_text or "⬤  Disconnected")
         self._status_label.setStyleSheet(f"color: {COLOUR_RED};")
 
         # Emit pyqt Signal

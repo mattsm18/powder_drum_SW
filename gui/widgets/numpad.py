@@ -20,8 +20,7 @@ BTN_STYLE     = "min-height: 0px; min-width: 0px; border-radius: 4px;"
 
 
 class NumpadDialog(QDialog):
-    def __init__(self, parent, title: str, current_value: float,
-                 min_val: float, max_val: float):
+    def __init__(self, parent, title: str, current_value: float, min_val: float, max_val: float):
         super().__init__(parent)
         self._min_val = min_val
         self._max_val = max_val
@@ -45,14 +44,14 @@ class NumpadDialog(QDialog):
 
     def _build_ui(self, title: str):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setContentsMargins(12, 4, 12, 12)
         layout.setSpacing(8)
 
         # Title
         title_lbl = QLabel(title)
         title_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_lbl.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
-        title_lbl.setFixedHeight(28)
+        title_lbl.setFixedHeight(20)
         layout.addWidget(title_lbl)
 
         # Input display

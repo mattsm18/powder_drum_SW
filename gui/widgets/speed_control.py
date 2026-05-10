@@ -83,9 +83,7 @@ class SpeedControl(QWidget):
 
         self._stop_motor_btn = QPushButton("STOP")
         self._stop_motor_btn.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
-        self._stop_motor_btn.setStyleSheet(
-            "background-color: #b53131; color: #FFFFFF;"
-        )
+        self._stop_motor_btn.setStyleSheet("background-color: #b53131; color: #FFFFFF;")
         self._stop_motor_btn.clicked.connect(self._on_stop_motor_pressed)
         layout.addWidget(self._stop_motor_btn)
 
@@ -110,9 +108,7 @@ class SpeedControl(QWidget):
         self._motor_stopped = False  # waiting for real confirmation
 
         self._stop_motor_btn.setText("STOPPING")
-        self._stop_motor_btn.setStyleSheet(
-            "background-color: #f51d1d; color: #FFFFFF;"
-        )
+        self._stop_motor_btn.setStyleSheet("background-color: #f51d1d; color: #FFFFFF;")
         self._stop_motor_btn.setEnabled(False)
 
     def _reset_stop_btn(self):
