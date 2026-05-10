@@ -71,7 +71,7 @@ class NumpadDialog(QDialog):
         layout.addWidget(self._display)
 
         # Range hint
-        hint = QLabel(f"{self._min_val} – {self._max_val}")
+        hint = QLabel(f"{self._min_val:.2f} – {self._max_val:.2f}")
         hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
         hint.setFixedHeight(18)
         hint.setStyleSheet(f"color: {COLOUR_HINT}; font-size: 11px;")

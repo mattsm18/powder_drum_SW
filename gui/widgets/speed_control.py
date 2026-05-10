@@ -64,100 +64,84 @@ class SpeedControl(QWidget):
         layout.setContentsMargins(4, 2, 4, 2)
         layout.setSpacing(6)
 
-        hint = QLabel("Tap a cell to type · Slider = motor shaft (rad/s)")
-        hint.setStyleSheet(f"color: {COLOUR_HINT}; font-size: 10px;")
-        hint.setWordWrap(False)
-        layout.addWidget(hint)
-
         grid = QGridLayout()
         grid.setHorizontalSpacing(6)
-        grid.setVerticalSpacing(4)
+        grid.setVerticalSpacing(10)
         grid.setContentsMargins(0, 0, 0, 0)
         grid.setColumnStretch(1, 1)
         grid.setColumnStretch(2, 1)
 
-        corner = QWidget()
-        corner.setFixedWidth(36)
-        grid.addWidget(corner, 0, 0)
+        title_font = QFont("Segoe UI", 10, QFont.Weight.Bold)
+        title_lbl = QLabel("Speed Control")
+        title_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_lbl.setFont(title_font)
+        title_lbl.setStyleSheet(f"color: {COLOUR_HINT};")
+        grid.addWidget(title_lbl, 0, 1, 1, 2)
 
         hdr_font = QFont("Segoe UI", 9, QFont.Weight.Bold)
         motor_hdr = QLabel("Motor target")
         motor_hdr.setAlignment(Qt.AlignmentFlag.AlignCenter)
         motor_hdr.setFont(hdr_font)
-        grid.addWidget(motor_hdr, 0, 1)
+        grid.addWidget(motor_hdr, 1, 1)
 
         drum_hdr = QLabel("Drum target")
         drum_hdr.setAlignment(Qt.AlignmentFlag.AlignCenter)
         drum_hdr.setFont(hdr_font)
-        grid.addWidget(drum_hdr, 0, 2)
-
-        rad_lbl = QLabel("rad/s")
-        rad_lbl.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        rad_lbl.setStyleSheet(f"color: {COLOUR_HINT}; font-size: 10px;")
-        grid.addWidget(rad_lbl, 1, 0)
-
-        rpm_lbl = QLabel("RPM")
-        rpm_lbl.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        rpm_lbl.setStyleSheet(f"color: {COLOUR_HINT}; font-size: 10px;")
-        grid.addWidget(rpm_lbl, 2, 0)
+        grid.addWidget(drum_hdr, 1, 2)
 
         cell_font = QFont("Segoe UI", 9, QFont.Weight.Bold)
-        cell_h = 40
+        cell_h = 44
 
         self._motor_rad_btn = QPushButton()
         self._motor_rad_btn.setFont(cell_font)
         self._motor_rad_btn.setMinimumHeight(cell_h)
-        self._motor_rad_btn.setMaximumHeight(cell_h)
-        self._motor_rad_btn.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
-        )
+        self._motor_rad_btn.setSizePolicy( QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed )
         self._motor_rad_btn.setStyleSheet(stylesheet_value_readout_pad(COLOUR_BLUE))
         self._motor_rad_btn.clicked.connect(self._open_numpad_motor_rad)
-        grid.addWidget(self._motor_rad_btn, 1, 1)
+        grid.addWidget(self._motor_rad_btn, 2, 1)
 
         self._drum_rad_btn = QPushButton()
         self._drum_rad_btn.setFont(cell_font)
         self._drum_rad_btn.setMinimumHeight(cell_h)
-        self._drum_rad_btn.setMaximumHeight(cell_h)
         self._drum_rad_btn.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
         )
         self._drum_rad_btn.setStyleSheet(stylesheet_value_readout_pad(COLOUR_ORANGE))
         self._drum_rad_btn.clicked.connect(self._open_numpad_drum_rad)
-        grid.addWidget(self._drum_rad_btn, 1, 2)
+        grid.addWidget(self._drum_rad_btn, 2, 2)
 
         self._motor_rpm_btn = QPushButton()
         self._motor_rpm_btn.setFont(cell_font)
         self._motor_rpm_btn.setMinimumHeight(cell_h)
-        self._motor_rpm_btn.setMaximumHeight(cell_h)
         self._motor_rpm_btn.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
         )
         self._motor_rpm_btn.setStyleSheet(stylesheet_value_readout_pad(COLOUR_BLUE))
         self._motor_rpm_btn.clicked.connect(self._open_numpad_motor_rpm)
-        grid.addWidget(self._motor_rpm_btn, 2, 1)
+        grid.addWidget(self._motor_rpm_btn, 3, 1)
 
         self._drum_rpm_btn = QPushButton()
         self._drum_rpm_btn.setFont(cell_font)
         self._drum_rpm_btn.setMinimumHeight(cell_h)
-        self._drum_rpm_btn.setMaximumHeight(cell_h)
         self._drum_rpm_btn.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
         )
         self._drum_rpm_btn.setStyleSheet(stylesheet_value_readout_pad(COLOUR_ORANGE))
         self._drum_rpm_btn.clicked.connect(self._open_numpad_drum_rpm)
-        grid.addWidget(self._drum_rpm_btn, 2, 2)
+        grid.addWidget(self._drum_rpm_btn, 3, 2)
 
         layout.addLayout(grid)
 
-        layout.addSpacing(4)
+        layout.addSpacing(6)
 
         control_layout = QHBoxLayout()
         control_layout.setSpacing(8)
-        control_layout.setContentsMargins(0, 2, 0, 0)
+        control_layout.setContentsMargins(0, 4, 0, 0)
 
+        touch_side = 56
         self._minus_btn = QPushButton("−")
-        self._minus_btn.setFont(QFont("Segoe UI", 16))
+        self._minus_btn.setFixedSize(touch_side, touch_side)
+        self._minus_btn.setFont(QFont("Segoe UI", 20))
         self._minus_btn.setStyleSheet(stylesheet_compact_icon_button())
         self._minus_btn.clicked.connect(self._step_down)
 
@@ -165,11 +149,13 @@ class SpeedControl(QWidget):
         self._slider.setMinimum(0)
         self._slider.setMaximum(int(self._setpoint.max * 100))
         self._slider.setValue(0)
+        self._slider.setMinimumHeight(40)
+        self._slider.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self._slider.valueChanged.connect(self._on_slider_changed)
 
         self._plus_btn = QPushButton("+")
-        self._plus_btn.setFixedSize(56, 56)
-        self._plus_btn.setFont(QFont("Segoe UI", 16))
+        self._plus_btn.setFixedSize(touch_side, touch_side)
+        self._plus_btn.setFont(QFont("Segoe UI", 20))
         self._plus_btn.setStyleSheet(stylesheet_compact_icon_button())
         self._plus_btn.clicked.connect(self._step_up)
 
@@ -210,7 +196,7 @@ class SpeedControl(QWidget):
 
     @staticmethod
     def _text_cell_rpm(rpm: float) -> str:
-        return f"{rpm:.1f} RPM"
+        return f"{rpm:.2f} RPM"
 
     # ---------------- CORE ----------------
 

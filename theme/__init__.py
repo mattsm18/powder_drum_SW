@@ -43,7 +43,7 @@ STYLE_SEPARATOR_LINE = f"color: {COLOUR_SURFACE};"
 
 
 def stylesheet_compact_icon_button() -> str:
-    return "min-height: 0px; min-width: 0px;"
+    return "min-height: 0px; min-width: 0x;"
 
 
 def stylesheet_primary_action_button() -> str:
