@@ -10,7 +10,13 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
 
 from gui.widgets.numpad import NumpadDialog
-from gui.theme import COLOUR_BLUE
+from theme import (
+    COLOUR_BLUE,
+    stylesheet_compact_icon_button,
+    stylesheet_stop_idle_button,
+    stylesheet_stop_pending_button,
+    stylesheet_value_readout_pad,
+)
 
 from config import get_parameter, get_ui_config
 
@@ -39,13 +45,7 @@ class SpeedControl(QWidget):
 
         self._value_btn = QPushButton("0.0 rad/s")
         self._value_btn.setFont(QFont("Courier New", 22, QFont.Weight.Bold))
-        self._value_btn.setStyleSheet(f"""
-            color: {COLOUR_BLUE};
-            background-color: #2A2A2A;
-            border: 1px solid #444444;
-            border-radius: 6px;
-            min-height: 30px;
-        """)
+        self._value_btn.setStyleSheet(stylesheet_value_readout_pad(COLOUR_BLUE))
         
         self._value_btn.clicked.connect(self._open_numpad)
         layout.addWidget(self._value_btn)
@@ -55,7 +55,7 @@ class SpeedControl(QWidget):
 
         self._minus_btn = QPushButton("−")
         self._minus_btn.setFont(QFont("Segoe UI", 16))
-        self._minus_btn.setStyleSheet("min-height: 0px; min-width: 0px;")
+        self._minus_btn.setStyleSheet(stylesheet_compact_icon_button())
         self._minus_btn.clicked.connect(self._step_down)
 
         self._slider = QSlider(Qt.Orientation.Horizontal)
@@ -67,7 +67,7 @@ class SpeedControl(QWidget):
         self._plus_btn = QPushButton("+")
         self._plus_btn.setFixedSize(56, 56)
         self._plus_btn.setFont(QFont("Segoe UI", 16))
-        self._plus_btn.setStyleSheet("min-height: 0px; min-width: 0px;")
+        self._plus_btn.setStyleSheet(stylesheet_compact_icon_button())
         self._plus_btn.clicked.connect(self._step_up)
 
         control_layout.addWidget(self._minus_btn)
@@ -83,7 +83,7 @@ class SpeedControl(QWidget):
 
         self._stop_motor_btn = QPushButton("STOP")
         self._stop_motor_btn.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
-        self._stop_motor_btn.setStyleSheet("background-color: #b53131; color: #FFFFFF;")
+        self._stop_motor_btn.setStyleSheet(stylesheet_stop_idle_button())
         self._stop_motor_btn.clicked.connect(self._on_stop_motor_pressed)
         layout.addWidget(self._stop_motor_btn)
 
@@ -108,12 +108,12 @@ class SpeedControl(QWidget):
         self._motor_stopped = False  # waiting for real confirmation
 
         self._stop_motor_btn.setText("STOPPING")
-        self._stop_motor_btn.setStyleSheet("background-color: #f51d1d; color: #FFFFFF;")
+        self._stop_motor_btn.setStyleSheet(stylesheet_stop_pending_button())
         self._stop_motor_btn.setEnabled(False)
 
     def _reset_stop_btn(self):
         self._stop_motor_btn.setText("STOP")
-        self._stop_motor_btn.setStyleSheet("background-color: #b53131; color: #FFFFFF;")
+        self._stop_motor_btn.setStyleSheet(stylesheet_stop_idle_button())
         self._stop_motor_btn.setEnabled(True)
 
     # ---------------- EXTERNAL STATE UPDATES ----------------

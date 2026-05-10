@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from PyQt6.QtWidgets import QApplication
 from comms.serial_handler import SerialHandler
 from gui.main_window      import MainWindow
-from gui.theme            import DARK_THEME
+from theme import DARK_THEME
 
 
 if __name__ == "__main__":

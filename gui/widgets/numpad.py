@@ -11,12 +11,20 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
-from gui.theme import COLOUR_BLUE, COLOUR_RED, COLOUR_SURFACE
+from theme import (
+    COLOUR_BLUE,
+    COLOUR_HINT,
+    COLOUR_RED,
+    COLOUR_SURFACE,
+    stylesheet_compact_icon_button,
+    stylesheet_numpad_display,
+    stylesheet_primary_action_button,
+)
 
 # Layout constants
 DIALOG_WIDTH  = 280
 BTN_HEIGHT    = 48
-BTN_STYLE     = "min-height: 0px; min-width: 0px; border-radius: 4px;"
+BTN_STYLE     = f"{stylesheet_compact_icon_button()} border-radius: 4px;"
 
 
 class NumpadDialog(QDialog):
@@ -59,20 +67,14 @@ class NumpadDialog(QDialog):
         self._display.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self._display.setFont(QFont("Courier New", 22, QFont.Weight.Bold))
         self._display.setFixedHeight(48)
-        self._display.setStyleSheet("""
-            background-color: #1A1A1A;
-            border: 1px solid #555555;
-            border-radius: 4px;
-            padding: 0px 8px;
-            color: #FFFFFF;
-        """)
+        self._display.setStyleSheet(stylesheet_numpad_display())
         layout.addWidget(self._display)
 
         # Range hint
         hint = QLabel(f"{self._min_val} – {self._max_val}")
         hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
         hint.setFixedHeight(18)
-        hint.setStyleSheet("color: #888888; font-size: 11px;")
+        hint.setStyleSheet(f"color: {COLOUR_HINT}; font-size: 11px;")
         layout.addWidget(hint)
 
         # Numpad grid
@@ -111,9 +113,7 @@ class NumpadDialog(QDialog):
 
         set_btn = QPushButton("Set")
         set_btn.setFixedHeight(BTN_HEIGHT)
-        set_btn.setStyleSheet(
-            f"{BTN_STYLE} background-color: {COLOUR_BLUE}; color: #FFFFFF; border: none;"
-        )
+        set_btn.setStyleSheet(f"{BTN_STYLE} {stylesheet_primary_action_button()}")
         set_btn.clicked.connect(self._on_set)
 
         action.addWidget(cancel_btn)
@@ -132,9 +132,7 @@ class NumpadDialog(QDialog):
         if len(self._input) > 7:
             self._input = self._input[:7]
 
-        self._display.setStyleSheet(self._display.styleSheet().replace(
-            f"color: {COLOUR_RED};", ""
-        ))
+        self._display.setStyleSheet(stylesheet_numpad_display())
         self._display.setText(self._input)
 
     def _on_set(self):
@@ -149,9 +147,7 @@ class NumpadDialog(QDialog):
 
         # Invalid — flash red
         self._display.setText("Out of range" if self._input else "?")
-        self._display.setStyleSheet(
-            self._display.styleSheet() + f"color: {COLOUR_RED};"
-        )
+        self._display.setStyleSheet(stylesheet_numpad_display(invalid=True))
         self._input = '0'
 
     def get_value(self) -> float | None:

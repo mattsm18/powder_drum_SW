@@ -8,6 +8,8 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
+from theme import COLOUR_MUTED
+
 
 class ValueDisplay(QWidget):
     def __init__(self, label: str, unit: str, colour: str, decimals: int = 2):
@@ -21,7 +23,7 @@ class ValueDisplay(QWidget):
         layout.setSpacing(4)
 
         self._label = QLabel(label)
-        self._label.setStyleSheet("color: #AAAAAA; font-size: 12px;")
+        self._label.setStyleSheet(f"color: {COLOUR_MUTED}; font-size: 12px;")
         layout.addWidget(self._label)
 
         layout.addStretch()
@@ -32,7 +34,7 @@ class ValueDisplay(QWidget):
         layout.addWidget(self._value_label)
 
         self._unit_label = QLabel(unit)
-        self._unit_label.setStyleSheet("color: #AAAAAA; font-size: 18px;")
+        self._unit_label.setStyleSheet(f"color: {COLOUR_MUTED}; font-size: 18px;")
         layout.addWidget(self._unit_label)
 
     def set_value(self, value: float):

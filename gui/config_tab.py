@@ -21,20 +21,26 @@ from PyQt6.QtWidgets import (
     QMessageBox
 )
 
-from PyQt6.QtCore import Qt, QObject, pyqtSignal
+from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QFont
 
 from gui.widgets.param_row import ParamRow
-from gui.theme import COLOUR_GREEN, COLOUR_RED, COLOUR_BLUE
+from gui.widgets.stub_placeholder import build_stub_placeholder
+from gui.serial_link_notifier import SerialLinkNotifier
+from theme import (
+    COLOUR_GREEN,
+    COLOUR_RED,
+    COLOUR_BLUE,
+    STYLE_SECTION_TITLE,
+    STYLE_SEPARATOR_LINE,
+    stylesheet_compact_icon_button,
+    stylesheet_danger_outline_button,
+    stylesheet_primary_action_button,
+)
 
-from config import get_parameters, get_ui_config
+from config import get_parameters
 
 import time
-
-"""Own QObject so link-lost can be emitted from the serial thread (queued to GUI thread)."""
-class _SerialLinkNotifier(QObject):
-
-    link_lost = pyqtSignal()
 
 class ConfigTab(QWidget):
 
@@ -43,11 +49,9 @@ class ConfigTab(QWidget):
     def __init__(self, handler):
         super().__init__()
 
-        # UI config and serial handler
-        self._config_ui = get_ui_config()
         self._serial_handler = handler
 
-        self._link_notifier = _SerialLinkNotifier()
+        self._link_notifier = SerialLinkNotifier()
         self._link_notifier.link_lost.connect(self._on_serial_link_lost)
 
         # Internal memory
@@ -76,8 +80,8 @@ class ConfigTab(QWidget):
         pages = [
             ("🔌   Connection", self._build_connection_tab()),
             ("⚙️   Motor", self._build_motor_tab()),
-            ("👁️   Vision", self._build_stub_tab("👁️  Vision — Coming Soon")),
-            ("📡   Stream", self._build_stub_tab("📡  Stream — Coming Soon")),
+            ("👁️   Vision", build_stub_placeholder("👁️  Vision — Coming Soon")),
+            ("📡   Stream", build_stub_placeholder("📡  Stream — Coming Soon")),
         ]
 
         for name, widget in pages:
@@ -109,8 +113,6 @@ class ConfigTab(QWidget):
 
         layout.addWidget(self._section_label("Serial Connection"))
 
-        conn_layout = QHBoxLayout()
-
         self._port_combo = QComboBox()
         self._port_combo.setMinimumHeight(44)
 
@@ -128,7 +130,7 @@ class ConfigTab(QWidget):
 
         refresh_btn = QPushButton("↻")
         refresh_btn.setFixedSize(44, 44)
-        refresh_btn.setStyleSheet("min-height: 0px; min-width: 0px;")
+        refresh_btn.setStyleSheet(stylesheet_compact_icon_button())
         refresh_btn.clicked.connect(self._refresh_serial_ports)
 
         self._connect_btn = QPushButton("Connect")
@@ -195,7 +197,7 @@ class ConfigTab(QWidget):
 
             line = QFrame()
             line.setFrameShape(QFrame.Shape.HLine)
-            line.setStyleSheet("color: #2A2A2A;")
+            line.setStyleSheet(STYLE_SEPARATOR_LINE)
             params_layout.addWidget(line)
 
         params_layout.addStretch()
@@ -210,14 +212,14 @@ class ConfigTab(QWidget):
         # Discard Button
         self._discard_btn = QPushButton("Discard")
         self._discard_btn.setFixedHeight(44)
-        self._discard_btn.setStyleSheet(f"color: {COLOUR_RED}; border-color: {COLOUR_RED};")
+        self._discard_btn.setStyleSheet(stylesheet_danger_outline_button())
         self._discard_btn.setEnabled(False)
         self._discard_btn.clicked.connect(self._on_discard)
 
         # Save Button
         self._save_btn = QPushButton("Save")
         self._save_btn.setFixedHeight(44)
-        self._save_btn.setStyleSheet(f"background-color: {COLOUR_BLUE}; color: #FFFFFF; border: none;")
+        self._save_btn.setStyleSheet(stylesheet_primary_action_button())
         self._save_btn.setEnabled(False)
         self._save_btn.clicked.connect(self._on_save)
 
@@ -236,21 +238,6 @@ class ConfigTab(QWidget):
         return widget
 
     # ──────────────────────────────────────────────────────
-    # Stub Tabs
-    # ──────────────────────────────────────────────────────
-
-    def _build_stub_tab(self, message: str) -> QWidget:
-
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
-        label = QLabel(message)
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        label.setStyleSheet("color: #666666; font-size: 14px;")
-        layout.addWidget(label)
-
-        return widget
-
-    # ──────────────────────────────────────────────────────
     # Helpers
     # ──────────────────────────────────────────────────────
 
@@ -258,7 +245,7 @@ class ConfigTab(QWidget):
 
         label = QLabel(text)
         label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
-        label.setStyleSheet("color: #FFFFFF; padding-bottom: 4px;")
+        label.setStyleSheet(STYLE_SECTION_TITLE)
         return label
 
     def _refresh_serial_ports(self):

@@ -4,8 +4,9 @@
 # Date: 6/05/26
 # Purpose: Camera tab — live feed, CV overlay, recording, IP stream
 
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QVBoxLayout
+
+from gui.widgets.stub_placeholder import build_stub_placeholder
 
 
 class CameraTab(QWidget):
@@ -16,6 +17,4 @@ class CameraTab(QWidget):
 
     def _build_ui(self):
         layout = QVBoxLayout(self)
-        label = QLabel("📷 Camera Tab — Coming Soon")
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(label)
+        layout.addWidget(build_stub_placeholder("📷 Camera Tab — Coming Soon", self))

@@ -10,10 +10,10 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QFont
 
 from gui.widgets.numpad import NumpadDialog
-from gui.theme import COLOUR_ORANGE
+from theme import COLOUR_DIM, COLOUR_MUTED, COLOUR_ORANGE, COLOUR_TEXT, stylesheet_compact_icon_button
 
 
-BTN_STYLE = "min-height: 0px; min-width: 0px;"
+BTN_STYLE = stylesheet_compact_icon_button()
 
 
 class ParamRow(QWidget):
@@ -49,20 +49,20 @@ class ParamRow(QWidget):
         # Name
         name_lbl = QLabel(self._label)
         name_lbl.setFixedWidth(140)
-        name_lbl.setStyleSheet("color: #E0E0E0; font-size: 13px;")
+        name_lbl.setStyleSheet(f"color: {COLOUR_TEXT}; font-size: 13px;")
         layout.addWidget(name_lbl)
 
         # Saved value
         self._saved_lbl = QLabel(self._fmt(self._saved))
         self._saved_lbl.setFixedWidth(64)
         self._saved_lbl.setFont(QFont("Courier New", 12))
-        self._saved_lbl.setStyleSheet("color: #AAAAAA;")
+        self._saved_lbl.setStyleSheet(f"color: {COLOUR_MUTED};")
         layout.addWidget(self._saved_lbl)
 
         # Unit
         unit_lbl = QLabel(self._unit)
         unit_lbl.setFixedWidth(48)
-        unit_lbl.setStyleSheet("color: #666666; font-size: 11px;")
+        unit_lbl.setStyleSheet(f"color: {COLOUR_DIM}; font-size: 11px;")
         layout.addWidget(unit_lbl)
 
         # Edit
@@ -75,7 +75,7 @@ class ParamRow(QWidget):
         # Pending indicator
         self._arrow_lbl = QLabel("→")
         self._arrow_lbl.setFixedWidth(16)
-        self._arrow_lbl.setStyleSheet("color: #666666;")
+        self._arrow_lbl.setStyleSheet(f"color: {COLOUR_DIM};")
         self._arrow_lbl.setVisible(False)
         layout.addWidget(self._arrow_lbl)
 

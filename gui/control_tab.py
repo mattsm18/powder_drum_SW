@@ -21,7 +21,7 @@ from PyQt6.QtGui import QFont
 
 from gui.widgets.value_display import ValueDisplay
 from gui.widgets.speed_control import SpeedControl
-from gui.theme import COLOUR_GREEN, COLOUR_BLUE, COLOUR_ORANGE
+from theme import COLOUR_BG, COLOUR_GREEN, COLOUR_BLUE, COLOUR_ORANGE, COLOUR_LIGHT_ON, COLOUR_MUTED, COLOUR_SURFACE, COLOUR_WHITE
 
 from config import get_parameter, get_ui_config
 
@@ -117,8 +117,8 @@ class ControlTab(QWidget):
         right_layout = QVBoxLayout(right)
         right_layout.setContentsMargins(0, 12, 8, 12)
 
-        pg.setConfigOption('background', '#1A1A1A')
-        pg.setConfigOption('foreground', '#AAAAAA')
+        pg.setConfigOption('background', COLOUR_BG)
+        pg.setConfigOption('foreground', COLOUR_MUTED)
 
         self._plot = pg.PlotWidget()
         self._plot.setFixedHeight(320)
@@ -177,10 +177,10 @@ class ControlTab(QWidget):
 
         if checked:
             self._lights_btn.setText("Light is ON")
-            self._lights_btn.setStyleSheet("background-color: #004e8a; color: #FFFFFF;")
+            self._lights_btn.setStyleSheet(f"background-color: {COLOUR_LIGHT_ON}; color: {COLOUR_WHITE};")
         else:
             self._lights_btn.setText("Light is OFF")
-            self._lights_btn.setStyleSheet("background-color: #2A2A2A; color: #FFFFFF;")
+            self._lights_btn.setStyleSheet(f"background-color: {COLOUR_SURFACE}; color: {COLOUR_WHITE};")
 
         if self._serial_handler.is_connected(): 
             self._serial_handler.set(self._lights.id, 1.0 if checked else 0.0)

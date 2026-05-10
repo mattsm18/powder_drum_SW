@@ -15,30 +15,33 @@ from gui.config_tab import ConfigTab
 from config import get_parameter
 
 class MainWindow(QMainWindow):
+    """Top-level shell: fixed 800×480 tab strip + shared serial handler across tabs."""
+
+    _TAB_SPECS: tuple[tuple[str, type], ...] = (
+        ("📷  Camera", CameraTab),
+        ("⚙️  Control", ControlTab),
+        ("🔧  Config", ConfigTab),
+    )
+
     def __init__(self, handler: SerialHandler):
         super().__init__()
         self._serial_handler = handler
-        
-        
+
         self.setWindowTitle("Powder Drum Control")
         self.setFixedSize(800, 480)
 
-        # Tab widget
         self._tabs = QTabWidget()
         self._tabs.setTabPosition(QTabWidget.TabPosition.North)
         self.setCentralWidget(self._tabs)
 
-        # Instantiate tabs — all share the same serial handler
-        self._camera_tab   = CameraTab(self._serial_handler)
-        self._control_tab  = ControlTab(self._serial_handler)
-        self._config_tab = ConfigTab(self._serial_handler)
+        for title, tab_cls in self._TAB_SPECS:
+            self._tabs.addTab(tab_cls(self._serial_handler), title)
 
-        # Attach pyqt Signal to function
+        self._camera_tab = self._tabs.widget(0)
+        self._control_tab = self._tabs.widget(1)
+        self._config_tab = self._tabs.widget(2)
+
         self._config_tab.serial_connection_state.connect(self._on_connection_state_changed)
-
-        self._tabs.addTab(self._camera_tab,   "📷  Camera")
-        self._tabs.addTab(self._control_tab,  "⚙️  Control")
-        self._tabs.addTab(self._config_tab, "🔧  Config")
 
     # If serial is connected and app closes, shut down motor
     def closeEvent(self, event):
