@@ -5,6 +5,7 @@
 # Purpose: Entry point — initialise serial handler and launch GUI
 
 import sys
+sys.dont_write_bytecode = True
 import os
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 

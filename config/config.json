@@ -1,5 +1,12 @@
-{
-    "version": "1.0",
+{   
+    "system": {
+        "version": "1.0"
+    },
+
+    "motor": {
+        "drum_to_motor_ratio": 4.0,
+        "motor_stop_threshold": 0.05
+    },
 
     "serial": {
         "default_port": "",
@@ -7,6 +14,24 @@
         "timeout_ms": 100,
         "max_retries": 3,
         "baud_options": [9600, 57600, 115200, 230400]
+    },
+
+    "ui": {
+        "plus_minus_step": 0.5,
+        "poll_rate_ms": 50,
+        "history_length": 100
+    },
+
+    "camera": {
+        "stream_port": 8080,
+        "stream_quality": 80,
+        "resolution": [640, 480],
+        "fps": 30
+    },
+
+    "vision": {
+        "method": "canny",
+        "available_methods": ["canny", "hough", "contour"]
     },
 
     "parameters": [
@@ -130,23 +155,5 @@
             "unit": "",
             "group": "io"
         }
-    ],
-
-    "ui": {
-        "plus_minus_step": 0.5,
-        "poll_rate_ms": 50,
-        "history_length": 100
-    },
-
-    "camera": {
-        "stream_port": 8080,
-        "stream_quality": 80,
-        "resolution": [640, 480],
-        "fps": 30
-    },
-
-    "vision": {
-        "method": "canny",
-        "available_methods": ["canny", "hough", "contour"]
-    }
+    ]
 }

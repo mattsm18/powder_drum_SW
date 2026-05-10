@@ -137,6 +137,8 @@ def get_parameter_by_id(param_id: int) -> Parameter | None:
 # Config Block Accessors
 # ──────────────────────────────────────────────────────
 
+def get_system_config() -> dict: return load()["system"]
+def get_motor_config() -> dict:  return load()["motor"]
 def get_ui_config() -> dict:     return load()["ui"]
 def get_serial_config() -> dict: return load()["serial"]
 def get_camera_config() -> dict: return load()["camera"]
