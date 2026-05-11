@@ -1,0 +1,12 @@
+# Core GUI Framework
+PyQt6==6.10.2
+
+# Serial Communication
+pyserial==3.5
+
+# Data Visualization & Plotting
+pyqtgraph==0.13.7
+
+# Testing
+pytest==7.4.4
+pytest-qt==4.2.0

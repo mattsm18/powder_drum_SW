@@ -10,6 +10,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import Qt
 from comms.serial_handler import SerialHandler
 from gui.main_window      import MainWindow
 from theme import DARK_THEME
@@ -24,9 +25,9 @@ if __name__ == "__main__":
     serial_handler = SerialHandler()
     window = MainWindow(serial_handler)
 
-    # Uncomment for Linux Kiosk Target
-    #window.showFullScreen()
-    #app.setOverrideCursor(Qt.CursorShape.BlankCursor)
+    # Linux Kiosk Target
+    window.showFullScreen()
+    app.setOverrideCursor(Qt.CursorShape.BlankCursor)
     window.show()
 
     sys.exit(app.exec())
