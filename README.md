@@ -43,7 +43,8 @@ ENME891 is the capstone paper for the BE(Hons) degree at AUT. It is a year-long 
 - Motor control parameters (Acceleration, PI Controller Gains, Filter settings)
 - Vision Configuration
 - Video Streaming Configuration
-
+# System Diagram
+![alt text](https://github.com/mattsm18/powder_drum_FW/blob/main/docs/system_diagram.png "System")
 # Custom Serial Comms Protocol
 The powder drum implements a custom bi-directional serial comms protocol in 
 the firmware and the software
