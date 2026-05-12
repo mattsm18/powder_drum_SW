@@ -14,7 +14,7 @@ ENME891 is the capstone paper for the BE(Hons) degree at AUT. It is a year-long 
 - Josh Russell -> Mechanical design and build, MATLAB Computer vision models
 
 # Target
-- Raspberry Pi 5 -> 16 GB RAM
+### Raspberry Pi 5 -> 16 GB RAM
 - Global Shutter Camera
 - 7-inch Touchscreen
 
