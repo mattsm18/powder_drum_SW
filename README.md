@@ -33,6 +33,9 @@
 - Vision Configuration
 - Video Streaming Configuration
 
+## Custom Serial Comms Protocol
+![alt text](https://github.com/mattsm18/powder_drum_SW/docs/serial_protocol.png "Custom Serial Protocol")
+
 ## Authorship
 
 - Developed by Matthew Smith 22173112 
