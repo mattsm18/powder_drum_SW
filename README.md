@@ -2,12 +2,23 @@
 
 ### Software for ENME891 - Industrial Project
 
-## Target
+# About
+
+ENME891 is the capstone paper for the BE(Hons) degree at AUT. It is a year-long industrial project where students develop a real-world engineering solution.
+
+### Project name: 
+<b>Quanitfying the flowability of milk powders through the use of computer vision </b>
+
+### Project members / responsibilities:
+- Matthew Smith -> Embedded Firmware and Software Development, Electronic Design, on-device computer vision development
+- Josh Russell -> Mechanical design and build, MATLAB Computer vision models
+
+# Target
 - Raspberry Pi 5 -> 16 GB RAM
 - Global Shutter Camera
 - 7-inch Touchscreen
 
-## Key Functionality
+# Key Functionality
 ### High level Spec:
 - Provide and intuitve GUI so end users (Researchers) can ensure consistent expirimental results and validate results during data collection
 - Connect with Microcontroller and facilitate bi-directional comms over UART to[ powder_drum_FW ](https://github.com/mattsm18/powder_drum_FW)
@@ -33,7 +44,7 @@
 - Vision Configuration
 - Video Streaming Configuration
 
-## Custom Serial Comms Protocol
+# Custom Serial Comms Protocol
 The powder drum implements a custom bi-directional serial comms protocol in 
 the firmware and the software
 
@@ -42,7 +53,3 @@ This protocol includes ACKs, NACKs and a XOR CRC checksum to validate data integ
 Fully implemented in the firmware, some work still to do for ACK and NACK handling in the software.
 
 ![alt text](https://github.com/mattsm18/powder_drum_SW/blob/master/docs/serial_protocol.png "Custom Serial Protocol")
-
-## Authorship
-
-- Developed by Matthew Smith 22173112 
