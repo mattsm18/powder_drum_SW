@@ -34,7 +34,7 @@
 - Video Streaming Configuration
 
 ## Custom Serial Comms Protocol
-![alt text](https://github.com/mattsm18/powder_drum_SW/docs/serial_protocol.png "Custom Serial Protocol")
+![alt text](https://github.com/mattsm18/powder_drum_SW/blob/master/docs/serial_protocol.png "Custom Serial Protocol")
 
 ## Authorship
 
