@@ -34,6 +34,13 @@
 - Video Streaming Configuration
 
 ## Custom Serial Comms Protocol
+The powder drum implements a custom bi-directional serial comms protocol in 
+the firmware and the software
+
+This protocol includes ACKs, NACKs and a XOR CRC checksum to validate data integrity on the wire.
+
+Fully implemented in the firmware, some work still to do for ACK and NACK handling in the software.
+
 ![alt text](https://github.com/mattsm18/powder_drum_SW/blob/master/docs/serial_protocol.png "Custom Serial Protocol")
 
 ## Authorship
