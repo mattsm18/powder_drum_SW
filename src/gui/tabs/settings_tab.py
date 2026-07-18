@@ -13,7 +13,7 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QFont
 
 # Styling Imports
-from gui.theme import (
+from src.gui.theme import (
     COLOUR_GREEN,
     COLOUR_RED,
     COLOUR_BLUE,

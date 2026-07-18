@@ -6,9 +6,9 @@
 
 from PyQt6.QtWidgets import QMainWindow, QTabWidget
 
-from gui.tabs.camera_tab     import CameraTab
-from gui.tabs.motor_tab      import MotorTab
-from gui.tabs.settings_tab   import SettingsTab
+from src.gui.tabs.camera_tab     import CameraTab
+from src.gui.tabs.motor_tab      import MotorTab
+from src.gui.tabs.settings_tab   import SettingsTab
 
 class MainWindow(QMainWindow):
 

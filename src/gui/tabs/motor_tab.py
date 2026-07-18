@@ -8,20 +8,13 @@
 import collections
 import pyqtgraph as pg
 
-from PyQt6.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QVBoxLayout,
-    QPushButton,
-    QFrame
-)
-
+from PyQt6.QtWidgets import *
 from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QFont
 
-from gui.widgets.value_display import ValueDisplay
-from gui.widgets.speed_control import SpeedControl
-from gui.theme import COLOUR_BG, COLOUR_GREEN, COLOUR_BLUE, COLOUR_ORANGE, COLOUR_LIGHT_ON, COLOUR_MUTED, COLOUR_SURFACE, COLOUR_WHITE
+from src.gui.widgets.value_display import ValueDisplay
+from src.gui.widgets.speed_control import SpeedControl
+from src.gui.theme import *
 
 from config import get_parameter, get_ui_config
 

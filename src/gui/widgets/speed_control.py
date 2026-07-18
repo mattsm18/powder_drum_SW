@@ -20,8 +20,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
 
-from gui.widgets.numpad import NumpadDialog
-from gui.theme import (
+from src.gui.widgets.numpad import NumpadDialog
+from src.gui.theme import (
     COLOUR_BLUE,
     COLOUR_HINT,
     COLOUR_ORANGE,

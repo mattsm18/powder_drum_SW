@@ -10,7 +10,7 @@ import serial
 import threading
 from typing import Callable, Optional
 
-from comms.protocol import *
+from src.services.serial.protocol import *
 
 class SerialController:
     def __init__(self):
@@ -42,8 +42,7 @@ class SerialController:
         self._serial.dtr = False
 
     def start(self):
-        if not self._serial or not self._serial.is_open:
-            return
+        if not self._serial or not self._serial.is_open: return
         self._running = True
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
@@ -54,15 +53,14 @@ class SerialController:
     def stop(self):
         self._user_stop = True
         self._running = False
-        if self._thread and self._thread.is_alive():
-            self._thread.join(timeout=1.0)
+        if self._thread and self._thread.is_alive(): self._thread.join(timeout=1.0)
         self._thread = None
+        
         if self._serial:
-            try:
-                self._serial.close()
-            except (serial.SerialException, OSError):
-                pass
+            try: self._serial.close()
+            except (serial.SerialException, OSError): pass
             self._serial = None
+
         self._user_stop = False
 
     def set_link_lost_callback(self, callback: Optional[Callable[[], None]]):

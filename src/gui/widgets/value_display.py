@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
-from gui.theme import COLOUR_MUTED
+from src.gui.theme import COLOUR_MUTED
 
 
 class ValueDisplay(QWidget):

@@ -11,12 +11,7 @@
         "default_baud": 115200,
         "timeout_ms": 100,
         "max_retries": 3,
-        "baud_options": [
-            9600,
-            57600,
-            115200,
-            230400
-        ]
+        "baud_options": [9600, 57600, 115200, 230400]
     },
     "ui": {
         "plus_minus_step": 0.5,
