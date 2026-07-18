@@ -4,11 +4,12 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QSlider, QCheckBox
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
 
+from models.camera_model import CameraSetting
+
 class CameraTab(QWidget):
 
     # Outbound Signals
-    exposure_changed = pyqtSignal(int)
-    auto_exposure_changed = pyqtSignal(bool)
+    camera_setting_changed = pyqtSignal(CameraSetting, object)
 
     def __init__(self):
 
@@ -29,7 +30,7 @@ class CameraTab(QWidget):
         # Auto Exposure checkbox
         self.auto_exposure_checkbox = QCheckBox("Auto Exposure")
         self.auto_exposure_checkbox.setChecked(True)
-        self.auto_exposure_checkbox.stateChanged.connect(self._on_auto_exposure_changed)
+        self.auto_exposure_checkbox.stateChanged.connect(self._on_auto_exposure_checked)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.preview)
@@ -46,6 +47,10 @@ class CameraTab(QWidget):
 
     def set_connected(self, state): pass
 
-    def _on_exposure_changed(self, value): self.exposure_changed.emit(value)
-    def _on_auto_exposure_changed(self, value): self.auto_exposure_changed.emit(value)
+    def _on_exposure_changed(self, value): 
+        self.camera_setting_changed.emit(CameraSetting.EXPOSURE_TIME, value)
+    
+    def _on_auto_exposure_checked(self, checked):
+        self.camera_setting_changed.emit(CameraSetting.AUTO_EXPOSURE, checked)
+
     

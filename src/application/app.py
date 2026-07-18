@@ -22,8 +22,7 @@ class Application:
         
         # CAMERA WIRING
         self.camera_app.new_frame.connect(self.window.camera_tab.set_preview)
-        self.window.camera_tab.exposure_changed.connect(self.camera_app.set_exposure)
-        self.window.camera_tab.auto_exposure_changed.connect(self.camera_app.set_auto_exposure)
+        self.window.camera_tab.camera_setting_changed.connect(self.camera_app.set_camera_setting)
 
     def start(self):
         self.camera_app.connect()

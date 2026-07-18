@@ -4,7 +4,7 @@
 # Date: 18/07/26
 # Purpose: Handle camera application interface between GUI and Hardware
 
-from models.camera_model import CameraModel
+from models.camera_model import CameraModel, CameraSetting
 from managers.camera.camera_manager import CameraManager
 from PyQt6.QtCore import QTimer, QObject, pyqtSignal
 
@@ -42,12 +42,14 @@ class CameraApp(QObject):
         self.model.preview_frame = frame
         self.new_frame.emit(frame)
     
-    def set_exposure(self, value):
-        self.model.settings.exposure_time_us = value
+    def set_camera_setting(self, setting, value):
+
+        match setting:
+
+            case CameraSetting.EXPOSURE_TIME:
+                self.model.settings.exposure_time_us = value
+
+            case CameraSetting.AUTO_EXPOSURE:
+                self.model.settings.auto_exposure = value
+
         self.manager.apply_settings(self.model.settings)
-
-    def set_auto_exposure(self, enabled):
-        self.model.settings.auto_exposure = enabled
-        self.manager.apply_settings(self.model.settings)
-
-

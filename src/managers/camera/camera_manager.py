@@ -37,16 +37,26 @@ class CameraManager():
     def stop_recording(): pass
 
     def apply_settings(self, settings: CameraSettings):
-        
-        controls = {}
 
-        controls["AeEnable"] = settings.auto_exposure
-        controls["AwbEnable"] = settings.auto_white_balance
+        controls = {
+            "AeEnable":     settings.auto_exposure,
+            "AwbEnable":    settings.auto_white_balance,
+
+            "Brightness":   settings.brightness,
+            "Contrast":     settings.contrast,
+            "Saturation":   settings.saturation,
+            "Sharpness":    settings.sharpness,
+        }
 
         if not settings.auto_exposure:
-            controls["ExposureTime"] = settings.exposure_time_us
-            controls["AnalogueGain"] = settings.analogue_gain
-        
+            controls.update({
+                "ExposureTime": settings.exposure_time_us,
+                "AnalogueGain": settings.analogue_gain,
+            })
+
+        if not settings.auto_white_balance:
+            controls.update({"ColourGains": settings.colour_gains})
+
         self._camera.set_controls(controls)
 
 
