@@ -1,74 +1,51 @@
-#
-# Title: gui/camera_tab.py
-# Author: Matthew Smith 22173112
-# Date: 6/05/26
-# Purpose: Camera tab — live feed, CV overlay, recording, IP stream
+# gui/tabs/camera_tab.py
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QSlider, QCheckBox
 from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtCore import Qt, QTimer
-
-try: from picamera2 import Picamera2
-except ImportError: Picamera2 = None
+from PyQt6.QtCore import Qt, pyqtSignal
 
 class CameraTab(QWidget):
+
+    # Outbound Signals
+    exposure_changed = pyqtSignal(int)
+    auto_exposure_changed = pyqtSignal(bool)
+
     def __init__(self):
+
         super().__init__()
-        self._picam2 = None
-        self._build_ui()
-        self._start_camera()
+        self.build_ui()
+        
+    def build_ui(self):
+        # Camera feed preview
+        self.preview = QLabel()
 
-    def _build_ui(self):
+        # Exposure Slider
+        self.exposure_slider = QSlider(Qt.Orientation.Horizontal)
+        self.exposure_slider.setRange(100, 100000)
+        self.exposure_slider.setValue(2000)
+        self.exposure_slider.valueChanged.connect(self._on_exposure_changed)
+        self.exposure_slider.setFixedHeight(60)
+
+        # Auto Exposure checkbox
+        self.auto_exposure_checkbox = QCheckBox("Auto Exposure")
+        self.auto_exposure_checkbox.setChecked(True)
+        self.auto_exposure_checkbox.stateChanged.connect(self._on_auto_exposure_changed)
+
         layout = QVBoxLayout(self)
-        self._feed_label = QLabel("Initializing camera…")
-        self._feed_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._feed_label.setMinimumSize(640, 480)
-        self._feed_label.setStyleSheet("background-color: black; color: white;")
-        layout.addWidget(self._feed_label)
+        layout.addWidget(self.preview)
+        layout.addWidget(self.exposure_slider)
+        layout.addWidget(self.auto_exposure_checkbox)
 
-    def _start_camera(self):
-        if Picamera2 is None:
-            self._feed_label.setText("picamera2 not installed — cannot start camera feed")
-            return
 
-        try:
-            self._picam2 = Picamera2()
-            config = self._picam2.create_preview_configuration(main={"size": (640, 480), "format": "RGB888"})
-            self._picam2.configure(config)
-            self._picam2.start()
-        except Exception as exc:
-            self._feed_label.setText(f"Camera failed to start: {exc}")
-            self._picam2 = None
-            return
+    # GUI Updates
+    def set_preview(self, frame):
 
-        self._timer = QTimer(self)
-        self._timer.timeout.connect(self._update_frame)
-        self._timer.start(33)  # ~30 fps
+        h, w, channels = frame.shape
+        image = QImage(frame.data,w, h, w * channels, QImage.Format.Format_BGR888)
+        self.preview.setPixmap(QPixmap.fromImage(image))
 
-    def _update_frame(self):
-        if self._picam2 is None:
-            return
+    def set_connected(self, state): pass
 
-        frame = self._picam2.capture_array()  # numpy array, RGB888 — ready for OpenCV later
-        h, w, ch = frame.shape
-        bytes_per_line = ch * w
-        qt_image = QImage(frame.data, w, h, bytes_per_line, QImage.Format.Format_RGB888)
-        pixmap = QPixmap.fromImage(qt_image)
-        self._feed_label.setPixmap(
-            pixmap.scaled(
-                self._feed_label.size(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation,
-            )
-        )
-
-    def closeEvent(self, event):
-        self.stop_camera()
-        super().closeEvent(event)
-
-    # Clean stop function
-    def stop_camera(self):
-        if hasattr(self, "_timer"): self._timer.stop()
-        if self._picam2 is not None:
-            self._picam2.stop()
-            self._picam2 = None
+    def _on_exposure_changed(self, value): self.exposure_changed.emit(value)
+    def _on_auto_exposure_changed(self, value): self.auto_exposure_changed.emit(value)
+    

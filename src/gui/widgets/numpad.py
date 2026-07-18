@@ -12,15 +12,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
-from src.gui.theme import (
-    COLOUR_BLUE,
-    COLOUR_HINT,
-    COLOUR_RED,
-    COLOUR_SURFACE,
-    stylesheet_compact_icon_button,
-    stylesheet_numpad_display,
-    stylesheet_primary_action_button,
-)
+from gui.theme import *
 
 # Layout constants
 DIALOG_WIDTH  = 280

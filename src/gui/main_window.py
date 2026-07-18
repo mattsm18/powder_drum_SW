@@ -6,17 +6,11 @@
 
 from PyQt6.QtWidgets import QMainWindow, QTabWidget
 
-from src.gui.tabs.camera_tab     import CameraTab
-from src.gui.tabs.motor_tab      import MotorTab
-from src.gui.tabs.settings_tab   import SettingsTab
+from gui.tabs.camera_tab     import CameraTab
+from gui.tabs.control_tab    import ControlTab
+from gui.tabs.settings_tab   import SettingsTab
 
 class MainWindow(QMainWindow):
-
-    _TAB_SPECS: tuple[tuple[str, type], ...] = (
-        ("Camera", CameraTab),
-        ("Motor", MotorTab),
-        ("Settings", SettingsTab),
-    )
 
     def __init__(self):
         super().__init__()
@@ -27,9 +21,10 @@ class MainWindow(QMainWindow):
         self._tabs.setTabPosition(QTabWidget.TabPosition.North)
         self.setCentralWidget(self._tabs)
 
-        for title, tab_cls in self._TAB_SPECS:
-            self._tabs.addTab(tab_cls(), title)
+        self.camera_tab = CameraTab()
+        self.motor_tab = ControlTab()
+        self.settings_tab = SettingsTab()
 
-        self._camera_tab = self._tabs.widget(0)
-        self._motor_tab = self._tabs.widget(1)
-        self._settings_tab = self._tabs.widget(2)
+        self._tabs.addTab(self.camera_tab, "Camera")
+        self._tabs.addTab(self.motor_tab, "Control")
+        self._tabs.addTab(self.settings_tab, "Settings")

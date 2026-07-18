@@ -4,25 +4,12 @@
 # Date: 6/05/26
 # Purpose: Settings tab -> modifies config.json to drive all settings
 
-# Configuration imports
-from config import get_parameters, get_camera_config
-
 # Qt UI imports
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtGui import QFont
 
 # Styling Imports
-from src.gui.theme import (
-    COLOUR_GREEN,
-    COLOUR_RED,
-    COLOUR_BLUE,
-    STYLE_SECTION_TITLE,
-    STYLE_SEPARATOR_LINE,
-    stylesheet_compact_icon_button,
-    stylesheet_danger_outline_button,
-    stylesheet_primary_action_button,
-)
+from gui.theme import *
 
 class SettingsTab(QWidget):
 
@@ -30,12 +17,6 @@ class SettingsTab(QWidget):
 
     def __init__(self):
         super().__init__()
-
-        # Internal memory
-        self._connected = False
-        self._param_rows: dict[str, ParameterRow] = {}
-        self._camera_config = get_camera_config()
-
         self._build_ui()
 
     # ──────────────────────────────────────────────────────

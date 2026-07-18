@@ -17,29 +17,15 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QSizePolicy,
 )
+
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
 
-from src.gui.widgets.numpad import NumpadDialog
-from src.gui.theme import (
-    COLOUR_BLUE,
-    COLOUR_HINT,
-    COLOUR_ORANGE,
-    stylesheet_compact_icon_button,
-    stylesheet_stop_idle_button,
-    stylesheet_stop_pending_button,
-    stylesheet_value_readout_pad,
-)
+from gui.widgets.numpad import NumpadDialog
+from gui.theme import *
 
-from config import get_parameter, get_ui_config, get_motor_config
-
-
-def _rad_s_to_rpm(rad_s: float) -> float:
-    return rad_s * 60.0 / (2.0 * math.pi)
-
-
-def _rpm_to_rad_s(rpm: float) -> float:
-    return rpm * (2.0 * math.pi) / 60.0
+def _rad_s_to_rpm(rad_s: float) -> float: return rad_s * 60.0 / (2.0 * math.pi)
+def _rpm_to_rad_s(rpm: float) -> float: return rpm * (2.0 * math.pi) / 60.0
 
 
 class SpeedControl(QWidget):
@@ -47,14 +33,7 @@ class SpeedControl(QWidget):
 
     def __init__(self):
         super().__init__()
-
-        self._motor_config = get_motor_config()
-        self._ui_config = get_ui_config()
-        self._setpoint = get_parameter("setpoint")
-
-        self._internal_setpoint = 0.0
-        self._motor_stopped = False
-
+        self._setpoint = None
         self._build_ui()
 
     # ---------------- UI ----------------
