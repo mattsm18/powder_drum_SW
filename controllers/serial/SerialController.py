@@ -1,6 +1,6 @@
 # 
-# Title: comms/serial_handler.py
-# Author: GenAi + Matthew Smith 22173112
+# Title: controllers/serial/serial_handler.py
+# Author: Matthew Smith 22173112
 # Date: 6/05/26
 # Purpose: 
 # - Class that runs on its own thread to handle serial comms with arduino
@@ -12,7 +12,7 @@ from typing import Callable, Optional
 
 from comms.protocol import *
 
-class SerialHandler:
+class SerialController:
     def __init__(self):
         self._callbacks = {}
         self._running   = False

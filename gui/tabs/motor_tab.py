@@ -21,16 +21,14 @@ from PyQt6.QtGui import QFont
 
 from gui.widgets.value_display import ValueDisplay
 from gui.widgets.speed_control import SpeedControl
-from theme import COLOUR_BG, COLOUR_GREEN, COLOUR_BLUE, COLOUR_ORANGE, COLOUR_LIGHT_ON, COLOUR_MUTED, COLOUR_SURFACE, COLOUR_WHITE
+from gui.theme import COLOUR_BG, COLOUR_GREEN, COLOUR_BLUE, COLOUR_ORANGE, COLOUR_LIGHT_ON, COLOUR_MUTED, COLOUR_SURFACE, COLOUR_WHITE
 
 from config import get_parameter, get_ui_config
 
-class ControlTab(QWidget):
+class MotorTab(QWidget):
 
-    def __init__(self, handler):
+    def __init__(self):
         super().__init__()
-
-        self._serial_handler = handler
 
         # ──────────────────────────────────────────────
         # Config-driven parameters

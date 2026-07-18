@@ -80,7 +80,7 @@ _config: dict = {}
 def load() -> dict:
 
     global _config
-    if not _config:
+    if not _config: 
         with open(_CONFIG_PATH, "r") as f: _config = json.load(f)
     return _config
 
@@ -91,6 +91,13 @@ def reload() -> dict:
     _config = {}
     return load()
 
+# ──────────────────────────────────────────────────────
+# Config Saving
+# ──────────────────────────────────────────────────────
+
+def save() -> None:
+    with open(_CONFIG_PATH, "w") as f:
+        json.dump(_config, f, indent=4)
 
 # ──────────────────────────────────────────────────────
 # Parameter Access

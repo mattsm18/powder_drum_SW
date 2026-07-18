@@ -12,9 +12,8 @@ try: from picamera2 import Picamera2
 except ImportError: Picamera2 = None
 
 class CameraTab(QWidget):
-    def __init__(self, handler):
+    def __init__(self):
         super().__init__()
-        self._handler = handler
         self._picam2 = None
         self._build_ui()
         self._start_camera()
