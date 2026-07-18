@@ -18,9 +18,9 @@ class MainWindow(QMainWindow):
     """Top-level shell: fixed 800×480 tab strip + shared serial handler across tabs."""
 
     _TAB_SPECS: tuple[tuple[str, type], ...] = (
-        ("📷  Camera", CameraTab),
-        ("⚙️  Control", ControlTab),
-        ("🔧  Config", ConfigTab),
+        ("Camera", CameraTab),
+        ("Control", ControlTab),
+        ("Config", ConfigTab),
     )
 
     def __init__(self, handler: SerialHandler):

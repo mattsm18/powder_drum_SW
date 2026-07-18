@@ -275,7 +275,7 @@ class ConfigTab(QWidget):
 
         if not port:
 
-            self._status_label.setText("⬤  No port selected")
+            self._status_label.setText("No port selected")
             self._status_label.setStyleSheet(f"color: {COLOUR_RED};")
             self._connect_btn.setChecked(False)
             return
@@ -289,7 +289,7 @@ class ConfigTab(QWidget):
 
             # Update UI
             self._connect_btn.setText("Disconnect")
-            self._status_label.setText(f"⬤  Connected — {port} @ {baud}")
+            self._status_label.setText(f"Connected — {port} @ {baud}")
             self._status_label.setStyleSheet(f"color: {COLOUR_GREEN};")
 
             # Emit pyqt Signal
@@ -300,13 +300,13 @@ class ConfigTab(QWidget):
             traceback.print_exc() 
             self._connected = False
             self._connect_btn.setChecked(False)
-            self._status_label.setText(f"⬤  Failed: {e}")
+            self._status_label.setText(f"Failed: {e}")
             self._status_label.setStyleSheet(f"color: {COLOUR_RED};")
 
     def _on_serial_link_lost(self):
         if not self._connected:
             return
-        self._disconnect(status_text="⬤  Connection lost — cable unplugged or device removed")
+        self._disconnect(status_text="Connection lost — cable unplugged or device removed")
 
     def _disconnect(self, status_text: str | None = None):
         self._serial_handler.clear_link_lost_callback()
@@ -318,7 +318,7 @@ class ConfigTab(QWidget):
         # Update UI
         self._connect_btn.setText("Connect")
         self._connect_btn.setChecked(False)
-        self._status_label.setText(status_text or "⬤  Disconnected")
+        self._status_label.setText(status_text or "Disconnected")
         self._status_label.setStyleSheet(f"color: {COLOUR_RED};")
 
         # Emit pyqt Signal
