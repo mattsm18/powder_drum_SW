@@ -85,7 +85,12 @@ class CameraTab(QWidget):
 
     def set_usb_disconnected(self):
         self.sidebar.set_usb_disconnected()
+        
+    def set_internal_usage(self, used_bytes, quota_bytes):
+        self.sidebar.set_internal_usage(used_bytes, quota_bytes)
 
+    def set_usb_usage(self, used_bytes, quota_bytes):
+        self.sidebar.set_usb_usage(used_bytes, quota_bytes)
     # INTERNAL
     #--------------------------------------------------------------------------------------
 

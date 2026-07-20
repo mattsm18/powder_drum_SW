@@ -28,6 +28,8 @@ class Application:
         self._wire_camera()
         self._wire_storage()
 
+        
+
     def start(self):
         self.camera_app.connect()
         self.window.showFullScreen()
@@ -51,3 +53,6 @@ class Application:
         #self.storage_app.storage_full.connect(self.window.show_storage_full_warning)
         self.window.camera_tab.copy_requested.connect(self.storage_app.copy_to_usb)
         self.window.camera_tab.delete_requested.connect(self.storage_app.delete_file)
+        self.storage_app.internal_usage_updated.connect(self.window.camera_tab.set_internal_usage)
+        self.storage_app.usb_usage_updated.connect(self.window.camera_tab.set_usb_usage)
+        self.storage_app.refresh_internal()

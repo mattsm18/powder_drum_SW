@@ -2,22 +2,22 @@
 # Title: gui/widgets/storage_sidebar.py
 # Author: Matthew Smith 22173112
 # Date: 20/07/26
-# Purpose: Sidebar widget for browsing internal/USB storage, previewing, and copying files
+# Purpose: Sidebar widget for browsing internal/USB storage and previewing files
 
 from pathlib import Path
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget,
-    QListWidgetItem, QPushButton, QProgressBar, QTabWidget
+    QWidget, QVBoxLayout, QLabel, QListWidget,
+    QListWidgetItem, QProgressBar, QStackedWidget, QFrame
 )
-
 from PyQt6.QtCore import pyqtSignal, Qt
 from models.storage_model import FileEntry, MediaType
+
 
 class StorageSidebar(QWidget):
 
     # Outbound Signals
-    copy_requested = pyqtSignal(object)     # FileEntry
-    delete_requested = pyqtSignal(object)   # FileEntry
+    copy_requested = pyqtSignal(object)     # FileEntry - not wired yet, for future action menu
+    delete_requested = pyqtSignal(object)   # FileEntry - not wired yet, for future action menu
     preview_requested = pyqtSignal(object)  # FileEntry
 
     # CONSTRUCTOR
@@ -27,110 +27,146 @@ class StorageSidebar(QWidget):
         super().__init__()
 
         self._usb_available = False
+        self.setFixedWidth(400)
+        
+        root = QVBoxLayout(self)
+        root.setContentsMargins(8, 8, 8, 8)
+        root.setSpacing(8)
 
-        layout = QVBoxLayout(self)
+        internal_section = self._build_internal_section()
+        usb_section = self._build_usb_section()
 
-        # Internal storage usage
-        self.internal_usage_label = QLabel("Internal: 0 / 8 GB")
+        root.addWidget(internal_section, stretch=1)
+        root.addWidget(self._divider())
+        root.addWidget(usb_section, stretch=1)
+
+    # LAYOUT BUILDERS
+    #--------------------------------------------------------------------------------------
+
+    def _build_internal_section(self) -> QWidget:
+        section = QWidget()
+        layout = QVBoxLayout(section)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(4)
+
+        self.internal_usage_label = QLabel("Internal  0.0 / 8.0 GB")
+        self.internal_usage_label.setStyleSheet("font-weight: 600; font-size: 14px;")
         self.internal_usage_bar = QProgressBar()
+        self.internal_usage_bar.setTextVisible(False)
+        self.internal_usage_bar.setFixedHeight(8)
+
+        self.internal_list = QListWidget()
+        self.internal_list.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.internal_list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
         layout.addWidget(self.internal_usage_label)
         layout.addWidget(self.internal_usage_bar)
+        layout.addWidget(self.internal_list, stretch=1)
+        return section
 
-        # Tabs: internal / USB file lists
-        self.tabs = QTabWidget()
-        self.internal_list = QListWidget()
+    #--------------------------------------------------------------------------------------
+
+    def _build_usb_section(self) -> QWidget:
+        section = QWidget()
+        layout = QVBoxLayout(section)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(4)
+
+        self.usb_usage_label = QLabel("USB Drive  0.0 / 8.0 GB")
+        self.usb_usage_label.setStyleSheet("font-weight: 600; font-size: 14px;")
+        self.usb_usage_bar = QProgressBar()
+        self.usb_usage_bar.setTextVisible(False)
+        self.usb_usage_bar.setFixedHeight(8)
+
+        # Stack: index 0 = "no drive" placeholder, index 1 = actual file list
+        self.usb_stack = QStackedWidget()
+
+        self.usb_empty_placeholder = QLabel("No USB drive connected")
+        self.usb_empty_placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.usb_empty_placeholder.setWordWrap(True)
+        self.usb_empty_placeholder.setStyleSheet("color: #888; font-size: 13px; padding: 20px;")
+
         self.usb_list = QListWidget()
-        self.tabs.addTab(self.internal_list, "Internal")
-        self.tabs.addTab(self.usb_list, "USB (not connected)")
-        self.tabs.setTabEnabled(1, False)
-        layout.addWidget(self.tabs)
+        self.usb_list.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.usb_list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-        # Action buttons
-        button_row = QHBoxLayout()
-        self.copy_button = QPushButton("Copy to USB")
-        self.delete_button = QPushButton("Delete")
-        button_row.addWidget(self.copy_button)
-        button_row.addWidget(self.delete_button)
-        layout.addLayout(button_row)
+        self.usb_stack.addWidget(self.usb_empty_placeholder)  # index 0
+        self.usb_stack.addWidget(self.usb_list)               # index 1
+        self.usb_stack.setCurrentIndex(0)
 
-        self._wire_internal_signals()
+        layout.addWidget(self.usb_usage_label)
+        layout.addWidget(self.usb_usage_bar)
+        layout.addWidget(self.usb_stack, stretch=1)
+
+        # Start fully greyed out
+        self._set_usb_enabled(False)
+        return section
+
+    #--------------------------------------------------------------------------------------
+
+    def _divider(self) -> QFrame:
+        line = QFrame()
+        line.setFrameShape(QFrame.Shape.HLine)
+        line.setFrameShadow(QFrame.Shadow.Sunken)
+        return line
 
     # PUBLIC API (slots)
     #--------------------------------------------------------------------------------------
 
     def set_internal_files(self, files: list[FileEntry]):
         self._populate_list(self.internal_list, files)
-        # usage bar handled separately via set_internal_usage
 
     #--------------------------------------------------------------------------------------
 
     def set_internal_usage(self, used_bytes: int, quota_bytes: int):
-        self.internal_usage_bar.setMaximum(quota_bytes)
-        self.internal_usage_bar.setValue(min(used_bytes, quota_bytes))
-        self.internal_usage_label.setText(
-            f"Internal: {used_bytes / 1e9:.2f} / {quota_bytes / 1e9:.0f} GB")
+        used_mb = used_bytes // (1024 * 1024)
+        quota_mb = quota_bytes // (1024 * 1024)
+        self.internal_usage_bar.setMaximum(quota_mb)
+        self.internal_usage_bar.setValue(min(used_mb, quota_mb))
+        self.internal_usage_label.setText(f"Internal  {used_bytes / 1e9:.1f} / {quota_bytes / 1e9:.1f} GB")
 
     #--------------------------------------------------------------------------------------
 
     def set_usb_connected(self, mount_path: Path, files: list[FileEntry]):
         self._usb_available = True
-        self.tabs.setTabEnabled(1, True)
-        self.tabs.setTabText(1, f"USB ({mount_path.name})")
+        self._set_usb_enabled(True)
+        self.usb_stack.setCurrentIndex(1)
         self._populate_list(self.usb_list, files)
-        self.copy_button.setEnabled(True)
 
     #--------------------------------------------------------------------------------------
 
     def set_usb_disconnected(self):
         self._usb_available = False
         self.usb_list.clear()
-        self.tabs.setTabEnabled(1, False)
-        self.tabs.setTabText(1, "USB (not connected)")
-        self.tabs.setCurrentIndex(0)
-        self.copy_button.setEnabled(False)
+        self.usb_stack.setCurrentIndex(0)
+        self._set_usb_enabled(False)
+
+    #--------------------------------------------------------------------------------------
+
+    def set_usb_usage(self, used_bytes: int, quota_bytes: int):
+        used_mb = used_bytes // (1024 * 1024)
+        quota_mb = quota_bytes // (1024 * 1024)
+        self.usb_usage_bar.setMaximum(quota_mb)
+        self.usb_usage_bar.setValue(min(used_mb, quota_mb))
+        self.usb_usage_label.setText(f"USB Drive  {used_bytes / 1e9:.1f} / {quota_bytes / 1e9:.1f} GB")
 
     # INTERNAL
     #--------------------------------------------------------------------------------------
 
-    def _wire_internal_signals(self):
-        self.copy_button.clicked.connect(self._on_copy_clicked)
-        self.delete_button.clicked.connect(self._on_delete_clicked)
-        self.internal_list.itemClicked.connect(self._on_item_clicked)
-        self.usb_list.itemClicked.connect(self._on_item_clicked)
-        self.copy_button.setEnabled(False)  # disabled until USB connects
+    def _set_usb_enabled(self, enabled: bool):
+        self.usb_usage_bar.setEnabled(enabled)
+        self.usb_usage_label.setEnabled(enabled)
+        self.usb_usage_label.setStyleSheet(f"font-weight: 600; font-size: 14px; color: {'black' if enabled else '#999'};")
 
     #--------------------------------------------------------------------------------------
 
     def _populate_list(self, list_widget: QListWidget, files: list[FileEntry]):
         list_widget.clear()
         for entry in files:
-            icon = "🎬" if entry.media_type == MediaType.VIDEO else "📷"
             size_mb = entry.size_bytes / 1e6
-            item = QListWidgetItem(f"{icon}  {entry.path.name}   ({size_mb:.1f} MB)")
+            item = QListWidgetItem(f"{entry.path.name}   ({size_mb:.1f} MB)")
             item.setData(Qt.ItemDataRole.UserRole, entry)
+            item.setToolTip(entry.path.name)
             list_widget.addItem(item)
 
     #--------------------------------------------------------------------------------------
-
-    def _on_item_clicked(self, item: QListWidgetItem):
-        entry = item.data(Qt.ItemDataRole.UserRole)
-        self.preview_requested.emit(entry)
-
-    #--------------------------------------------------------------------------------------
-
-    def _on_copy_clicked(self):
-        entry = self._selected_entry()
-        if entry: self.copy_requested.emit(entry)
-
-    #--------------------------------------------------------------------------------------
-
-    def _on_delete_clicked(self):
-        entry = self._selected_entry()
-        if entry: self.delete_requested.emit(entry)
-
-    #--------------------------------------------------------------------------------------
-
-    def _selected_entry(self) -> FileEntry | None:
-        current_list = self.internal_list if self.tabs.currentIndex() == 0 else self.usb_list
-        item = current_list.currentItem()
-        return item.data(Qt.ItemDataRole.UserRole) if item else None

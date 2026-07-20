@@ -23,7 +23,7 @@ class FileEntry:
 class StorageState:
     files: list[FileEntry] = field(default_factory=list)
     used_bytes: int = 0
-    quota_bytes: int = 8 * 1024 * 1024 * 1024
+    quota_bytes: int = 4 * 1000 * 1000 * 1000 
 
 @dataclass
 class StorageModel:
