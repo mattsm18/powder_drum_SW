@@ -4,7 +4,10 @@
 # Date: 18/07/26
 # Purpose: Handle hardware for Raspberry Pi Global Shutter camera with PiCamera2 library
 
+from pathlib import Path
 from picamera2 import Picamera2
+from picamera2.encoders import H264Encoder
+from picamera2.outputs import FfmpegOutput
 from models.camera_model import CameraSetting
 
 class CameraManager():
@@ -29,6 +32,8 @@ class CameraManager():
         
         super().__init__()
         self._camera = None
+        self._encoder = None
+        self._is_recording = False
 
     # PUBLIC API
     #--------------------------------------------------------------------------------------
@@ -44,6 +49,8 @@ class CameraManager():
 
     def disconnect(self): 
         if self._camera:
+            if self._is_recording:
+                self.stop_recording()
             self._camera.stop()
             self._camera.close()
             self._camera = None
@@ -56,8 +63,23 @@ class CameraManager():
     
     #--------------------------------------------------------------------------------------
 
-    def start_recording(): pass
-    def stop_recording(): pass
+    def start_recording(self, path: Path, bitrate: int = None):
+        if not self._camera: return
+        if self._is_recording: return
+
+        self._encoder = H264Encoder(bitrate=bitrate) if bitrate else H264Encoder()
+        output = FfmpegOutput(str(path))
+        self._camera.start_encoder(self._encoder, output)
+        self._is_recording = True
+
+    #--------------------------------------------------------------------------------------
+
+    def stop_recording(self):
+        if not self._camera or not self._is_recording: return
+
+        self._camera.stop_encoder(self._encoder)
+        self._encoder = None
+        self._is_recording = False
 
     #--------------------------------------------------------------------------------------
     
@@ -77,6 +99,9 @@ class CameraManager():
     #--------------------------------------------------------------------------------------
 
     def _reconfigure(self, setting: CameraSetting, value):
+        was_recording = self._is_recording
+        if was_recording: self.stop_recording()
+
         self._camera.stop()
 
         match setting:
@@ -90,5 +115,7 @@ class CameraManager():
 
         self._camera.configure(config)
         self._camera.start()
+
+        if was_recording: pass
     
     #--------------------------------------------------------------------------------------
