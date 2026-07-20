@@ -92,7 +92,7 @@ class PreviewWidget(QWidget):
     # ------------------------------------------------------------------
 
     def set_recording(self, recording: bool):
-
+        
         if self._recording == recording: return
         self._recording = recording
 
@@ -118,7 +118,7 @@ class PreviewWidget(QWidget):
     # ------------------------------------------------------------------
 
     def set_streaming(self, streaming: bool):
-
+        
         if self._streaming == streaming: return
         self._streaming = streaming
 
@@ -155,8 +155,8 @@ class PreviewWidget(QWidget):
 
     def _stream_timeout(self):
 
-        self._stream_phase += 0.10
-        if self._stream_phase > math.tau: self._stream_phase = 0
+        self._stream_phase += 0.02
+        if self._stream_phase >= 1: self._stream_phase = 0
         self.update()
 
     # ------------------------------------------------------------------
@@ -187,6 +187,8 @@ class PreviewWidget(QWidget):
         self._draw_streaming(painter)
         self._draw_flash(painter)
 
+    # ------------------------------------------------------------------
+
     def _draw_frame(self, painter: QPainter):
 
         image_w = self._frame.width()
@@ -209,7 +211,7 @@ class PreviewWidget(QWidget):
             draw_w = draw_h * image_ratio
 
         x = (widget_w - draw_w) / 2
-        y = (widget_h - draw_h) / 2
+        y = 0
 
         self._image_rect = QRectF(x, y, draw_w, draw_h)
 
@@ -217,6 +219,8 @@ class PreviewWidget(QWidget):
             self._image_rect,
             self._frame,
         )
+
+    # ------------------------------------------------------------------
 
     def _draw_recording(self, painter: QPainter):
 
@@ -240,39 +244,50 @@ class PreviewWidget(QWidget):
         font.setPointSize(11)
         painter.setFont(font)
 
+    # ------------------------------------------------------------------
+
     def _draw_flash(self, painter: QPainter):
 
         if self._flash_alpha == 0: return
         colour = QColor(255, 255, 255, self._flash_alpha)
         painter.fillRect(self._image_rect, colour)
 
-    def _draw_streaming(self, painter: QPainter):
+    # ------------------------------------------------------------------
+                
+    def _draw_streaming(self, painter):
 
         if not self._streaming: return
+        if self._image_rect.isNull(): return
 
-        cx = self._image_rect.right() - 35
-        cy = self._image_rect.bottom() - 35
+        cx = self._image_rect.right() - 70
+        cy = self._image_rect.bottom() - 100
 
-        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
+        # Centre dot
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(0, 170, 255))
+        painter.drawEllipse(QPointF(cx, cy), 6, 6)
+
+        # Upward propagating waves
         for i in range(3):
 
-            radius = 10 + i * 16
-            alpha = 170 + 70 * math.sin(self._stream_phase + i)
-            pen = QPen(QColor(0, 170, 255, int(alpha)))
+            progress = (self._stream_phase + i * 0.7) % 1.0
+
+            radius = 15 + progress * 45
+            alpha = int(220 * (1.0 - progress))
+
+            pen = QPen(QColor(0, 170, 255, alpha))
             pen.setWidth(3)
 
             painter.setPen(pen)
+            painter.setBrush(Qt.BrushStyle.NoBrush)
+
             painter.drawArc(
                 int(cx - radius),
                 int(cy - radius),
-                radius * 2,
-                radius * 2,
-                -45 * 16,
-                90 * 16,
+                int(radius * 2),
+                int(radius * 2),
+                0 * 16,
+                90 * 16
             )
-
-        painter.setBrush(QColor(0, 170, 255))
-        painter.setPen(Qt.PenStyle.NoPen)
-
-        painter.drawEllipse(QPointF(cx, cy), 4, 4)

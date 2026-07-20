@@ -46,11 +46,10 @@ class SettingsTab(QWidget):
 
         # Define our tabs/pages
         pages = [
-            ("Connection", self._build_connection_page()),
             ("Camera", self._build_camera_page()),
             ("Vision", self._build_vision_page()),
-            ("Motor", self._build_motor_page()),
-            ("System Info", self._build_system_page()),
+            ("Motor Control", self._build_motor_page()),
+            ("About", self._build_about_page()),
         ]
 
         for name, widget in pages:
@@ -163,9 +162,9 @@ class SettingsTab(QWidget):
         return widget
 
     # ──────────────────────────────────────────────────────
-    # System Info 
+    # About 
     # ──────────────────────────────────────────────────────
 
-    def _build_system_page(self) -> QWidget:
+    def _build_about_page(self) -> QWidget:
         widget = QWidget()
         return widget

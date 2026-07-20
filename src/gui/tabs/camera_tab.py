@@ -13,6 +13,8 @@ from gui.widgets.preview_widget import PreviewWidget
 
 from models.camera_model import CameraSetting
 
+ICON_WIDTH = 64
+ICON_HEIGHT = 56
 
 class CameraTab(QWidget):
 
@@ -23,6 +25,8 @@ class CameraTab(QWidget):
     take_photo = pyqtSignal()
     start_streaming = pyqtSignal()
     stop_streaming = pyqtSignal()
+    
+
 
     # CONSTRUCTOR
     #--------------------------------------------------------------------------------------
@@ -37,17 +41,27 @@ class CameraTab(QWidget):
 
         self.record_button = QPushButton()
         self.record_button.setIcon(QIcon("assets/icons/video_icon.svg"))
-        self.record_button.setIconSize(QSize(64, 64))
+        self.record_button.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
         self.record_button.setCheckable(True)
 
         self.photo_button = QPushButton()
         self.photo_button.setIcon(QIcon("assets/icons/photo_icon.svg"))
-        self.photo_button.setIconSize(QSize(64, 64))
+        self.photo_button.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
 
         self.stream_button = QPushButton()
         self.stream_button.setIcon(QIcon("assets/icons/stream_icon.svg"))
-        self.stream_button.setIconSize(QSize(64, 64))
+        self.stream_button.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
         self.stream_button.setCheckable(True)
+
+        self.outline_button = QPushButton()
+        self.outline_button.setIcon(QIcon("assets/icons/outline_icon.svg"))
+        self.outline_button.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
+        self.outline_button.setCheckable(True)
+        
+        self.vision_button = QPushButton()
+        self.vision_button.setIcon(QIcon("assets/icons/vision_icon.svg"))
+        self.vision_button.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
+        self.vision_button.setCheckable(True)
         
         # Create Layouts
         root_layout = QHBoxLayout(self)
@@ -59,6 +73,8 @@ class CameraTab(QWidget):
         button_layout.addWidget(self.record_button)
         button_layout.addWidget(self.photo_button)
         button_layout.addWidget(self.stream_button)
+        button_layout.addWidget(self.outline_button)
+        button_layout.addWidget(self.vision_button)
         button_layout.addStretch()
 
         # Render root
@@ -90,12 +106,17 @@ class CameraTab(QWidget):
             self.stop_recording.emit()
             self.preview.set_recording(False)
 
+    #--------------------------------------------------------------------------------------
+
     def _on_photo_pressed(self):
 
         self.take_photo.emit()
         self.preview.trigger_flash()
 
+    #--------------------------------------------------------------------------------------
+
     def _on_stream_pressed(self):
+
         if self.stream_button.isChecked(): 
 
             self.start_streaming.emit()
@@ -105,3 +126,5 @@ class CameraTab(QWidget):
 
             self.stop_streaming.emit()
             self.preview.set_streaming(False)
+
+    #--------------------------------------------------------------------------------------
