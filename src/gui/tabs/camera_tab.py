@@ -5,21 +5,24 @@
 # Purpose: Camera preview tab with recording controls and storage sidebar
 
 import numpy as np
+
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton
-from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import pyqtSignal, Qt, QSize
+from gui.widgets.preview_widget import PreviewWidget
 
 from models.camera_model import CameraSetting
-from gui.widgets.storage_sidebar import StorageSidebar
+
 
 class CameraTab(QWidget):
 
     # Outbound Signals
     camera_setting_changed = pyqtSignal(CameraSetting, object)
-    record_requested = pyqtSignal()
-    stop_requested = pyqtSignal()
-    copy_requested = pyqtSignal(object)     # FileEntry, forwarded from sidebar
-    delete_requested = pyqtSignal(object)   # FileEntry, forwarded from sidebar
+    start_recording = pyqtSignal()
+    stop_recording = pyqtSignal()
+    take_photo = pyqtSignal()
+    start_streaming = pyqtSignal()
+    stop_streaming = pyqtSignal()
 
     # CONSTRUCTOR
     #--------------------------------------------------------------------------------------
@@ -27,82 +30,78 @@ class CameraTab(QWidget):
     def __init__(self):
         super().__init__()
 
-        root_layout = QHBoxLayout(self)
+        # Create Widgets and Buttons
+        self.preview = PreviewWidget()
+        self.preview.setMinimumSize(640, 480)
+        self.preview.setStyleSheet("background-color: black;")
 
-        # Main preview area
-        preview_layout = QVBoxLayout()
-        self.preview_label = QLabel()
-        self.preview_label.setMinimumSize(640, 480)
-        self.preview_label.setStyleSheet("background-color: black;")
-
-        self.record_button = QPushButton("Start Recording")
+        self.record_button = QPushButton()
+        self.record_button.setIcon(QIcon("assets/icons/video_icon.svg"))
+        self.record_button.setIconSize(QSize(64, 64))
         self.record_button.setCheckable(True)
 
-        preview_layout.addWidget(self.preview_label)
-        preview_layout.addWidget(self.record_button)
+        self.photo_button = QPushButton()
+        self.photo_button.setIcon(QIcon("assets/icons/photo_icon.svg"))
+        self.photo_button.setIconSize(QSize(64, 64))
 
-        # Sidebar
-        self.sidebar = StorageSidebar()
+        self.stream_button = QPushButton()
+        self.stream_button.setIcon(QIcon("assets/icons/stream_icon.svg"))
+        self.stream_button.setIconSize(QSize(64, 64))
+        self.stream_button.setCheckable(True)
+        
+        # Create Layouts
+        root_layout = QHBoxLayout(self)
+        preview_layout = QVBoxLayout()
+        button_layout = QVBoxLayout()
 
-        root_layout.addLayout(preview_layout, stretch=3)
-        root_layout.addWidget(self.sidebar, stretch=1)
+        # Attach widgets and buttons to layouts
+        preview_layout.addWidget(self.preview)
+        button_layout.addWidget(self.record_button)
+        button_layout.addWidget(self.photo_button)
+        button_layout.addWidget(self.stream_button)
+        button_layout.addStretch()
 
-        self._wire_internal_signals()
+        # Render root
+        root_layout.addLayout(preview_layout, stretch=1)
+        root_layout.addLayout(button_layout)
+
+        # Wiring
+        self.record_button.clicked.connect(self._on_record_pressed)
+        self.photo_button.clicked.connect(self._on_photo_pressed)
+        self.stream_button.clicked.connect(self._on_stream_pressed)
 
     # PUBLIC API (slots)
     #--------------------------------------------------------------------------------------
 
-    def set_preview(self, frame: np.ndarray):
-        height, width, channels = frame.shape
-        bytes_per_line = channels * width
-        image = QImage(frame.data, width, height, bytes_per_line, QImage.Format.Format_RGB888)
-        self.preview_label.setPixmap(QPixmap.fromImage(image).scaled(
-            self.preview_label.size(), Qt.AspectRatioMode.KeepAspectRatio))
+    def set_preview(self, frame: np.ndarray): self.preview.set_frame(frame)
 
     #--------------------------------------------------------------------------------------
+    # Wiring / Signal emits
 
-    def set_recording_state(self):
-        self.record_button.setChecked(True)
-        self.record_button.setText("Stop Recording")
+    def _on_record_pressed(self):
 
-    #--------------------------------------------------------------------------------------
+        if self.record_button.isChecked(): 
 
-    def set_idle_state(self):
-        self.record_button.setChecked(False)
-        self.record_button.setText("Start Recording")
+            self.start_recording.emit()
+            self.preview.set_recording(True)
 
-    # Forwarded straight to the sidebar (kept here so Application only wires camera_tab)
-    #--------------------------------------------------------------------------------------
+        else: 
 
-    def set_internal_files(self, files):
-        self.sidebar.set_internal_files(files)
+            self.stop_recording.emit()
+            self.preview.set_recording(False)
 
-    def set_internal_usage(self, used_bytes, quota_bytes):
-        self.sidebar.set_internal_usage(used_bytes, quota_bytes)
+    def _on_photo_pressed(self):
 
-    def set_usb_connected(self, mount_path, files):
-        self.sidebar.set_usb_connected(mount_path, files)
+        self.take_photo.emit()
+        self.preview.trigger_flash()
 
-    def set_usb_disconnected(self):
-        self.sidebar.set_usb_disconnected()
-        
-    def set_internal_usage(self, used_bytes, quota_bytes):
-        self.sidebar.set_internal_usage(used_bytes, quota_bytes)
+    def _on_stream_pressed(self):
+        if self.stream_button.isChecked(): 
 
-    def set_usb_usage(self, used_bytes, quota_bytes):
-        self.sidebar.set_usb_usage(used_bytes, quota_bytes)
-    # INTERNAL
-    #--------------------------------------------------------------------------------------
+            self.start_streaming.emit()
+            self.preview.set_streaming(True)
 
-    def _wire_internal_signals(self):
-        self.record_button.clicked.connect(self._on_record_clicked)
-        self.sidebar.copy_requested.connect(self.copy_requested)
-        self.sidebar.delete_requested.connect(self.delete_requested)
+        else: 
 
-    #--------------------------------------------------------------------------------------
-
-    def _on_record_clicked(self):
-        if self.record_button.isChecked():
-            self.record_requested.emit()
-        else:
-            self.stop_requested.emit()
+            self.stop_streaming.emit()
+            self.preview.set_streaming(False)

@@ -4,6 +4,7 @@
 # Date: 20/07/26
 # Purpose: Filesystem operations for internal and USB storage locations
 
+import shutil
 from pathlib import Path
 from models.storage_model import FileEntry, MediaType
 
@@ -47,10 +48,25 @@ class StorageManager():
 
     #--------------------------------------------------------------------------------------
 
+    def get_usage_with_device_capacity(self, root: Path) -> tuple[int, int]:
+        used = sum(f.size_bytes for f in self.list_files(root))
+        free = shutil.disk_usage(root).free
+        quota = used + free
+        return used, quota
+
+    #--------------------------------------------------------------------------------------
+
     def ensure_space(self, root: Path, quota_bytes: int, needed_bytes: int):
         used, _ = self.get_usage(root, quota_bytes)
         if used + needed_bytes > quota_bytes:
             raise StorageFullError(f"Not enough space in {root}")
+
+    #--------------------------------------------------------------------------------------
+
+    def ensure_space_on_device(self, root: Path, needed_bytes: int):
+        free = shutil.disk_usage(root).free
+        if free < needed_bytes:
+            raise StorageFullError(f"Not enough free space on device for {root}")
 
     #--------------------------------------------------------------------------------------
 

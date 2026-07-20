@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import QMainWindow, QTabWidget
 
 from gui.tabs.camera_tab     import CameraTab
 from gui.tabs.control_tab    import ControlTab
+from gui.tabs.storage_tab   import StorageTab
 from gui.tabs.settings_tab   import SettingsTab
 
 class MainWindow(QMainWindow):
@@ -23,8 +24,10 @@ class MainWindow(QMainWindow):
 
         self.camera_tab = CameraTab()
         self.motor_tab = ControlTab()
+        self.captures_tab = StorageTab()
         self.settings_tab = SettingsTab()
 
         self._tabs.addTab(self.camera_tab, "Camera")
         self._tabs.addTab(self.motor_tab, "Control")
+        self._tabs.addTab(self.captures_tab, "Captures")
         self._tabs.addTab(self.settings_tab, "Settings")

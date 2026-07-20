@@ -41,7 +41,7 @@ class CameraManager():
     def connect(self):
         self._camera = Picamera2()
         print(self._camera.camera_controls) # debug available settings
-        config = self._camera.create_preview_configuration(main={"format": "RGB888"})
+        config = self._camera.create_preview_configuration(main={"format": "BGR888"})
         self._camera.configure(config)
         self._camera.start()
 
@@ -107,9 +107,9 @@ class CameraManager():
         match setting:
             case CameraSetting.RESOLUTION:
                 width, height = value
-                config = self._camera.create_preview_configuration(main={"format": "RGB888", "size": (width, height)})
+                config = self._camera.create_preview_configuration(main={"format": "BGR888", "size": (width, height)})
             case CameraSetting.FPS:
-                config = self._camera.create_preview_configuration(main={"format": "RGB888"}, controls={"FrameRate": value})
+                config = self._camera.create_preview_configuration(main={"format": "BGR888"}, controls={"FrameRate": value})
             case _:
                 raise ValueError(f"No reconfiguration control mapped for {setting}")
 

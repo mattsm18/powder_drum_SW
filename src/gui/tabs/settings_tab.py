@@ -1,5 +1,5 @@
 #
-# Title: gui/config_tab.py
+# Title: gui/tabs/settings_tab.py
 # Author: Matthew Smith 22173112
 # Date: 6/05/26
 # Purpose: Settings tab -> modifies config.json to drive all settings
@@ -15,7 +15,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 
 # Styling Imports
 from gui.theme import *
-from gui.widgets.scaled_preview import ScaledPreviewLabel
+from gui.widgets.preview_widget import PreviewWidget
 from gui.widgets.setting_row import BoolSettingRow, SliderSettingRow, NumericSettingRow, TupleSettingRow
 from models.camera_model import CameraSetting, CameraSettings
 
@@ -46,11 +46,11 @@ class SettingsTab(QWidget):
 
         # Define our tabs/pages
         pages = [
-            ("Connection", self._build_connection_tab()),
-            ("Camera", self._build_camera_tab()),
-            ("Vision", self._build_vision_tab()),
-            ("Motor", self._build_motor_tab()),
-            ("System Info", self._build_system_tab()),
+            ("Connection", self._build_connection_page()),
+            ("Camera", self._build_camera_page()),
+            ("Vision", self._build_vision_page()),
+            ("Motor", self._build_motor_page()),
+            ("System Info", self._build_system_page()),
         ]
 
         for name, widget in pages:
@@ -69,18 +69,18 @@ class SettingsTab(QWidget):
         root.addWidget(self._content_stack)
 
     # ──────────────────────────────────────────────────────
-    # Connection Tab
+    # Connection Setting
     # ──────────────────────────────────────────────────────
 
-    def _build_connection_tab(self) -> QWidget:
+    def _build_connection_page(self) -> QWidget:
         widget = QWidget()
         return widget
 
     # ──────────────────────────────────────────────────────
-    # Camera Controls
+    # Camera Settings
     # ──────────────────────────────────────────────────────
-    def _build_camera_tab(self) -> QWidget:
-        # Outer scroll area the tab page itself, added to the QStackedWidget
+    def _build_camera_page(self) -> QWidget:
+        # Outer scroll area the page page itself, added to the QStackedWidget
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -96,7 +96,7 @@ class SettingsTab(QWidget):
 
         # ── Preview ──
 
-        self._camera_preview = ScaledPreviewLabel()
+        self._camera_preview = PreviewWidget()
         self._camera_preview.setMinimumHeight(240)
         self._camera_preview.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         layout.addWidget(self._camera_preview)
@@ -129,7 +129,7 @@ class SettingsTab(QWidget):
         capture_group = QGroupBox("Resolution / FPS")
         capture_layout = QVBoxLayout(capture_group)
 
-        resolution_row = TupleSettingRow(CameraSetting.RESOLUTION, "Resolution (W/H)", defaults.resolution, min_val=64, max_val=1080, is_int=True)
+        resolution_row = TupleSettingRow(CameraSetting.RESOLUTION, "Resolution (W/H)", defaults.resolution, min_val=64, max_val=4096, is_int=True)
         fps_row = NumericSettingRow(CameraSetting.FPS, "FPS", defaults.fps, min_val=1, max_val=120, is_int=True)
 
         for row in (resolution_row, fps_row):
@@ -150,7 +150,7 @@ class SettingsTab(QWidget):
     # Vision Controls
     # ──────────────────────────────────────────────────────
 
-    def _build_vision_tab(self) -> QWidget:
+    def _build_vision_page(self) -> QWidget:
         widget = QWidget()
         return widget
 
@@ -158,7 +158,7 @@ class SettingsTab(QWidget):
     # Motor Controls
     # ──────────────────────────────────────────────────────
 
-    def _build_motor_tab(self) -> QWidget:
+    def _build_motor_page(self) -> QWidget:
         widget = QWidget()
         return widget
 
@@ -166,6 +166,6 @@ class SettingsTab(QWidget):
     # System Info 
     # ──────────────────────────────────────────────────────
 
-    def _build_system_tab(self) -> QWidget:
+    def _build_system_page(self) -> QWidget:
         widget = QWidget()
         return widget
