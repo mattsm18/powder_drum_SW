@@ -42,14 +42,10 @@ class CameraApp(QObject):
         self.model.preview_frame = frame
         self.new_frame.emit(frame)
     
-    def set_camera_setting(self, setting, value):
+    # Model state accessors
+    def set_camera_setting(self, setting: CameraSetting, value):
+        self.manager.apply_setting(setting, value)
+        setattr(self.model.settings, setting.value, value)
 
-        match setting:
-
-            case CameraSetting.EXPOSURE_TIME:
-                self.model.settings.exposure_time_us = value
-
-            case CameraSetting.AUTO_EXPOSURE:
-                self.model.settings.auto_exposure = value
-
-        self.manager.apply_settings(self.model.settings)
+    def get_camera_setting(self, setting: CameraSetting):
+        return getattr(self.model.settings, setting.value)

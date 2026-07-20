@@ -20,22 +20,8 @@ class CameraTab(QWidget):
         # Camera feed preview
         self.preview = QLabel()
 
-        # Exposure Slider
-        self.exposure_slider = QSlider(Qt.Orientation.Horizontal)
-        self.exposure_slider.setRange(100, 100000)
-        self.exposure_slider.setValue(2000)
-        self.exposure_slider.valueChanged.connect(self._on_exposure_changed)
-        self.exposure_slider.setFixedHeight(60)
-
-        # Auto Exposure checkbox
-        self.auto_exposure_checkbox = QCheckBox("Auto Exposure")
-        self.auto_exposure_checkbox.setChecked(True)
-        self.auto_exposure_checkbox.stateChanged.connect(self._on_auto_exposure_checked)
-
         layout = QVBoxLayout(self)
         layout.addWidget(self.preview)
-        layout.addWidget(self.exposure_slider)
-        layout.addWidget(self.auto_exposure_checkbox)
 
 
     # GUI Updates
@@ -46,11 +32,5 @@ class CameraTab(QWidget):
         self.preview.setPixmap(QPixmap.fromImage(image))
 
     def set_connected(self, state): pass
-
-    def _on_exposure_changed(self, value): 
-        self.camera_setting_changed.emit(CameraSetting.EXPOSURE_TIME, value)
-    
-    def _on_auto_exposure_checked(self, checked):
-        self.camera_setting_changed.emit(CameraSetting.AUTO_EXPOSURE, checked)
 
     

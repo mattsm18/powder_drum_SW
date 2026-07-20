@@ -19,7 +19,6 @@ DIALOG_WIDTH  = 280
 BTN_HEIGHT    = 48
 BTN_STYLE     = f"{stylesheet_compact_icon_button()} border-radius: 4px;"
 
-
 class NumpadDialog(QDialog):
     def __init__(self, parent, title: str, current_value: float, min_val: float, max_val: float):
         super().__init__(parent)
@@ -99,9 +98,7 @@ class NumpadDialog(QDialog):
 
         cancel_btn = QPushButton("Cancel")
         cancel_btn.setFixedHeight(BTN_HEIGHT)
-        cancel_btn.setStyleSheet(
-            f"{BTN_STYLE} color: {COLOUR_RED}; border: 1px solid {COLOUR_RED};"
-        )
+        cancel_btn.setStyleSheet(f"{BTN_STYLE} color: {COLOUR_RED}; border: 1px solid {COLOUR_RED};")
         cancel_btn.clicked.connect(self.reject)
 
         set_btn = QPushButton("Set")
@@ -114,16 +111,14 @@ class NumpadDialog(QDialog):
         layout.addLayout(action)
 
     def _on_key(self, key: str):
-        if key == '⌫':
+        if key == '⌫': 
             self._input = self._input[:-1] or '0'
-        elif key == '.':
-            if '.' not in self._input:
-                self._input += '.'
+        elif key == '.': 
+            if '.' not in self._input: self._input += '.'
         else:
             self._input = key if self._input == '0' else self._input + key
 
-        if len(self._input) > 7:
-            self._input = self._input[:7]
+        if len(self._input) > 7: self._input = self._input[:7]
 
         self._display.setStyleSheet(stylesheet_numpad_display())
         self._display.setText(self._input)

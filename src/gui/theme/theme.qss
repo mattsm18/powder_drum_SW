@@ -88,19 +88,26 @@ QLineEdit {
     min-height: 40px;
 }
 QLineEdit:focus {
-    border: 1px solid #00AAFF;
+    border: 1px solid #0088FF;
 }
 
 /* Scroll bars */
 QScrollBar:vertical {
     background-color: #2A2A2A;
-    width: 12px;
-    border-radius: 6px;
+    width: 28px;
+    border-radius: 10px;
 }
 QScrollBar::handle:vertical {
     background-color: #555555;
-    border-radius: 6px;
-    min-height: 40px;
+    border-radius: 10px;
+    min-height: 60px;
+}
+QScrollBar::handle:vertical:pressed {
+    background-color: #00AAFF;
+}
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
 }
 
 /* Separators */
@@ -125,3 +132,8 @@ QListWidget::item:selected {
     color: white;
     border-left: 4px solid #00AAFF;
 }
+
+/* setting specific */
+QCheckBox::indicator { width: 24px; height: 24px; }
+QSlider#settingSlider::handle:horizontal { width: 32px; height: 32px; }
+

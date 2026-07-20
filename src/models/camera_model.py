@@ -6,6 +6,7 @@
 
 import numpy as np
 from enum import Enum
+
 class CameraModel:
 
     # State Attributes
@@ -20,6 +21,7 @@ class CameraSetting(Enum):
     EXPOSURE_TIME =         "exposure_time_us"
     AUTO_EXPOSURE =         "auto_exposure"
     ANALOGUE_GAIN =         "analogue_gain"
+    COLOUR_GAINS =          "colour_gains"
     AUTO_WHITE_BALANCE =    "auto_white_balance"
     BRIGHTNESS =            "brightness"
     CONTRAST =              "contrast"
