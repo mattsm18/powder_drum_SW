@@ -39,14 +39,14 @@ class CameraTab(QWidget):
         self.preview.setMinimumSize(640, 480)
         self.preview.setStyleSheet("background-color: black;")
 
+        self.photo_button = QPushButton()
+        self.photo_button.setIcon(QIcon("assets/icons/photo_icon.svg"))
+        self.photo_button.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
+
         self.record_button = QPushButton()
         self.record_button.setIcon(QIcon("assets/icons/video_icon.svg"))
         self.record_button.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
         self.record_button.setCheckable(True)
-
-        self.photo_button = QPushButton()
-        self.photo_button.setIcon(QIcon("assets/icons/photo_icon.svg"))
-        self.photo_button.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
 
         self.stream_button = QPushButton()
         self.stream_button.setIcon(QIcon("assets/icons/stream_icon.svg"))
@@ -70,8 +70,8 @@ class CameraTab(QWidget):
 
         # Attach widgets and buttons to layouts
         preview_layout.addWidget(self.preview)
-        button_layout.addWidget(self.record_button)
         button_layout.addWidget(self.photo_button)
+        button_layout.addWidget(self.record_button)
         button_layout.addWidget(self.stream_button)
         button_layout.addWidget(self.outline_button)
         button_layout.addWidget(self.vision_button)
@@ -93,6 +93,14 @@ class CameraTab(QWidget):
 
     #--------------------------------------------------------------------------------------
     # Wiring / Signal emits
+    #--------------------------------------------------------------------------------------
+
+    def _on_photo_pressed(self):
+
+        self.take_photo.emit()
+        self.preview.trigger_flash()
+
+    #--------------------------------------------------------------------------------------
 
     def _on_record_pressed(self):
 
@@ -105,13 +113,6 @@ class CameraTab(QWidget):
 
             self.stop_recording.emit()
             self.preview.set_recording(False)
-
-    #--------------------------------------------------------------------------------------
-
-    def _on_photo_pressed(self):
-
-        self.take_photo.emit()
-        self.preview.trigger_flash()
 
     #--------------------------------------------------------------------------------------
 

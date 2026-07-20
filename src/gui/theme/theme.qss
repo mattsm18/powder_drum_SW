@@ -36,7 +36,7 @@ QTabBar::tab:hover {
 
 /* Buttons */
 QPushButton {
-    background-color: #2A2A2A;
+    background-color: #005045;
     color: #E0E0E0;
     border: 1px solid #444444;
     border-radius: 6px;
