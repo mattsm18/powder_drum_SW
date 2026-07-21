@@ -25,8 +25,6 @@ class CameraTab(QWidget):
     take_photo = pyqtSignal()
     start_streaming = pyqtSignal()
     stop_streaming = pyqtSignal()
-    
-
 
     # CONSTRUCTOR
     #--------------------------------------------------------------------------------------

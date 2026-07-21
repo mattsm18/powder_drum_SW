@@ -42,7 +42,7 @@ class StorageApp(QObject):
 
     #--------------------------------------------------------------------------------------
 
-    def get_recording_path(self, filename: str, reserve_bytes: int) -> Path:
+    def get_storage_path(self, filename: str, reserve_bytes: int) -> Path:
         try:
             self._manager.ensure_space(self._manager.internal_root, self.model.internal.quota_bytes, reserve_bytes)
         except StorageFullError:

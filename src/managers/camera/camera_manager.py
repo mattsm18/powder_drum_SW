@@ -5,6 +5,7 @@
 # Purpose: Handle hardware for Raspberry Pi Global Shutter camera with PiCamera2 library
 
 from pathlib import Path
+from PIL import Image
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import FfmpegOutput
@@ -53,12 +54,29 @@ class CameraManager():
             self._camera.stop()
             self._camera.close()
             self._camera = None
-
-    #--------------------------------------------------------------------------------------
     
+    #--------------------------------------------------------------------------------------
+
     def capture_frame(self): 
         if not self._camera: return None
         return self._camera.capture_array()
+    
+    #--------------------------------------------------------------------------------------
+
+    def take_photo(self, path: Path):
+
+        if not self._camera: return None
+        frame = self.capture_frame()
+        if frame is None: return None
+ 
+        path = Path(path)
+ 
+        # RGB888 config from Picamera2 is actually ordered BGR, so swap
+        # channels before handing the array to PIL (which expects RGB).
+        image = Image.fromarray(frame[:, :, ::-1] if frame.ndim == 3 and frame.shape[2] == 3 else frame)
+        image.save(path, format="PNG")
+ 
+        return path
     
     #--------------------------------------------------------------------------------------
 

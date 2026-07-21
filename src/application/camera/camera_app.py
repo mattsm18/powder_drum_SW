@@ -12,7 +12,7 @@ from models.camera_model import CameraModel, CameraSetting
 from managers.camera.camera_manager import CameraManager
 from PyQt6.QtCore import QTimer, QObject, pyqtSignal
 
-RESERVE_BYTES_FOR_RECORDING = 500 * 1024 * 1024
+RESERVED_BYTES = 500 * 1024 * 1024
 
 class CameraApp(QObject):
     
@@ -21,15 +21,18 @@ class CameraApp(QObject):
     connection_changed = pyqtSignal(bool)
     recording_started = pyqtSignal()
     recording_stopped = pyqtSignal()
+    streaming_started = pyqtSignal()
+    streaming_stopped = pyqtSignal()
+    photo_taken = pyqtSignal()
     storage_full = pyqtSignal()
 
     # CONSTRUCTOR
-    def __init__(self, get_recording_path: Callable[[str, int], Path]):
+    def __init__(self, storage_path: Callable[[str, int], Path]):
         super().__init__()
 
         self.model = CameraModel()
         self.manager = CameraManager()
-        self._get_recording_path = get_recording_path
+        self.storage_path = storage_path
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update)
@@ -65,7 +68,7 @@ class CameraApp(QObject):
 
         filename = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mp4"
         try:
-            path = self._get_recording_path(filename, RESERVE_BYTES_FOR_RECORDING)
+            path = self.storage_path(filename, RESERVED_BYTES)
         except Exception:
             self.storage_full.emit()
             return
@@ -80,3 +83,19 @@ class CameraApp(QObject):
         self.manager.stop_recording()
         self.model.recording = False
         self.recording_stopped.emit()
+
+    def start_streaming(self): pass
+    def stop_streaming(self): pass
+
+    def take_photo(self):
+
+        filename = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.png"
+
+        try:
+            path = self.storage_path(filename, RESERVED_BYTES)
+        except Exception:
+            self.storage_full.emit()
+            return
+
+        self.manager.take_photo(path)
+        self.photo_taken.emit()
