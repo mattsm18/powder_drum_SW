@@ -54,9 +54,9 @@ class CameraManager():
             self._camera.stop()
             self._camera.close()
             self._camera = None
-    
-    #--------------------------------------------------------------------------------------
 
+    #--------------------------------------------------------------------------------------
+    
     def capture_frame(self): 
         if not self._camera: return None
         return self._camera.capture_array()
@@ -64,25 +64,33 @@ class CameraManager():
     #--------------------------------------------------------------------------------------
 
     def take_photo(self, path: Path):
-
+        
         if not self._camera: return None
+
         frame = self.capture_frame()
         if frame is None: return None
- 
+
         path = Path(path)
- 
+        if path.suffix.lower() != ".png":
+            path = path.with_suffix(".png")
+        path.parent.mkdir(parents=True, exist_ok=True)
+
         # RGB888 config from Picamera2 is actually ordered BGR, so swap
         # channels before handing the array to PIL (which expects RGB).
         image = Image.fromarray(frame[:, :, ::-1] if frame.ndim == 3 and frame.shape[2] == 3 else frame)
         image.save(path, format="PNG")
- 
+
         return path
-    
+
     #--------------------------------------------------------------------------------------
 
-    def start_recording(self, path: Path, bitrate: int = None):
+    def start_recording(self, path: Path, bitrate: int = None, fps: int = None):
         if not self._camera: return
         if self._is_recording: return
+
+        if fps:
+            frame_duration_us = int(1_000_000 / fps)
+            self._camera.set_controls({"FrameDurationLimits": (frame_duration_us, frame_duration_us)})
 
         self._encoder = H264Encoder(bitrate=bitrate) if bitrate else H264Encoder()
         output = FfmpegOutput(str(path))
@@ -97,6 +105,10 @@ class CameraManager():
         self._camera.stop_encoder(self._encoder)
         self._encoder = None
         self._is_recording = False
+
+        # Release the frame-duration lock applied in start_recording so
+        # preview auto-exposure can vary frame timing again.
+        self._camera.set_controls({"FrameDurationLimits": (100, 1_000_000)})
 
     #--------------------------------------------------------------------------------------
     

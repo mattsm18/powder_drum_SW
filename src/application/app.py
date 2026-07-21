@@ -3,10 +3,6 @@
 # Author: Matthew Smith 22173112
 # Date: 6/05/26
 # Purpose: Central Application, Ties Apps to GUI
-# Functions as an EVENT -> FUNCTION map
-#
-# e.g Event on_start_recording_event (called by camera_tab UI)
-#     Function start_recording       (listened to by camera_app APPLICATION logic)
 
 # General Imports
 from pathlib import Path
@@ -43,7 +39,7 @@ class Application:
         self.camera_app.on_new_frame.                       connect(self.window.settings_tab.update_frame)
         self.camera_app.on_recording_stopped.               connect(self.storage_app.refresh_internal_storage)
         self.camera_app.on_photo_taken.                     connect(self.storage_app.refresh_internal_storage)
-        
+
         ### UI ---> APP ###
         self.window.camera_tab.on_setting_change_event.     connect(self.camera_app.set_camera_setting)
         self.window.camera_tab.on_start_recording_event.    connect(self.camera_app.start_recording)
@@ -58,15 +54,17 @@ class Application:
     def _wire_storage(self):
     
         ### APP ---> UI ###
-        self.storage_app.on_internal_storage_updated.   connect(self.window.storage_tab.set_internal_files)
-        self.storage_app.on_internal_size_updated.      connect(self.window.storage_tab.set_internal_size)
-        self.storage_app.on_usb_connected.              connect(self.window.storage_tab.set_usb_files)
-        self.storage_app.on_usb_disconnected.           connect(self.window.storage_tab.clear_usb_files)
-        self.storage_app.on_usb_size_updated.           connect(self.window.storage_tab.set_usb_size)
-        self.storage_app.on_storage_full.               connect(self.window.storage_tab.show_storage_full)
+        self.storage_app.on_internal_storage_updated.       connect(self.window.storage_tab.set_internal_files)
+        self.storage_app.on_internal_size_updated.          connect(self.window.storage_tab.set_internal_size)
+        self.storage_app.on_usb_connected.                  connect(self.window.storage_tab.set_usb_files)
+        self.storage_app.on_usb_disconnected.               connect(self.window.storage_tab.clear_usb_files)
+        self.storage_app.on_usb_size_updated.               connect(self.window.storage_tab.set_usb_size)
+        self.storage_app.on_storage_full.                   connect(self.window.storage_tab.show_storage_full)
 
         ### UI ---> APP ###
-        self.window.storage_tab.on_copy_to_usb_event.   connect(self.storage_app.copy_to_usb)
-        self.window.storage_tab.on_delete_event.        connect(self.storage_app.delete_file)
-    
+        self.window.storage_tab.on_copy_to_usb_event.       connect(self.storage_app.copy_to_usb)
+        self.window.storage_tab.on_delete_event.            connect(self.storage_app.delete_file)
+        self.window.storage_tab.on_preview_opened_event.    connect(self.camera_app.pause_preview)
+        self.window.storage_tab.on_preview_closed_event.    connect(self.camera_app.resume_preview)
+
         self.storage_app.refresh_internal_storage()

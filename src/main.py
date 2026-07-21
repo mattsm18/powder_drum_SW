@@ -5,6 +5,9 @@
 # Purpose: Program Entry point
 
 import sys
+import os
+os.environ["QT_FFMPEG_DECODING_HW_DEVICE_TYPES"] = ""
+
 from PyQt6.QtWidgets import QApplication
 from application.app import Application
 from gui.theme import DARK_THEME

@@ -12,7 +12,7 @@ from models.camera_model import CameraModel, CameraSetting
 from managers.camera.camera_manager import CameraManager
 from PyQt6.QtCore import QTimer, QObject, pyqtSignal
 
-RESERVED_BYTES = 500 * 1024 * 1024
+RESERVED_BYTES = 5 * 1000 * 1000
 
 class CameraApp(QObject):
     
@@ -44,7 +44,6 @@ class CameraApp(QObject):
         self.model.connected = True
         self.timer.start(33)
 
-    # Called on timer
     def update(self):
 
         # Get latest frame from hardware
@@ -73,7 +72,7 @@ class CameraApp(QObject):
             self.on_storage_full.emit()
             return
 
-        self.manager.start_recording(path)
+        self.manager.start_recording(path, fps=self.model.settings.fps)
         self.model.recording = True
         self.on_recording_started.emit()
 
@@ -86,6 +85,12 @@ class CameraApp(QObject):
 
     def start_streaming(self): pass
     def stop_streaming(self): pass
+
+    def pause_preview(self):
+        if self.timer.isActive(): self.timer.stop()
+
+    def resume_preview(self):
+        if not self.timer.isActive(): self.timer.start(33)
 
     def take_photo(self):
 
