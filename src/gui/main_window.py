@@ -24,10 +24,10 @@ class MainWindow(QMainWindow):
 
         self.camera_tab = CameraTab()
         self.motor_tab = ControlTab()
-        self.captures_tab = StorageTab()
+        self.storage_tab = StorageTab()
         self.settings_tab = SettingsTab()
 
         self._tabs.addTab(self.camera_tab, "Camera")
         self._tabs.addTab(self.motor_tab, "Control")
-        self._tabs.addTab(self.captures_tab, "Captures")
+        self._tabs.addTab(self.storage_tab, "Captures")
         self._tabs.addTab(self.settings_tab, "Settings")

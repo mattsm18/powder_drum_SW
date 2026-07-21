@@ -42,7 +42,7 @@ class StorageManager():
 
     #--------------------------------------------------------------------------------------
 
-    def get_usage(self, root: Path, quota_bytes: int) -> tuple[int, int]:
+    def get_size(self, root: Path, quota_bytes: int) -> tuple[int, int]:
         used = sum(f.size_bytes for f in self.list_files(root))
         return used, quota_bytes
 
@@ -57,7 +57,7 @@ class StorageManager():
     #--------------------------------------------------------------------------------------
 
     def ensure_space(self, root: Path, quota_bytes: int, needed_bytes: int):
-        used, _ = self.get_usage(root, quota_bytes)
+        used, _ = self.get_size(root, quota_bytes)
         if used + needed_bytes > quota_bytes:
             raise StorageFullError(f"Not enough space in {root}")
 

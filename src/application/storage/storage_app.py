@@ -12,12 +12,12 @@ from models.storage_model import StorageModel, StorageState, FileEntry
 
 class StorageApp(QObject):
 
-    internal_updated = pyqtSignal(list)
-    usb_connected = pyqtSignal(Path, list)
-    usb_disconnected = pyqtSignal()
-    storage_full = pyqtSignal(str)
-    internal_usage_updated = pyqtSignal(object, object)
-    usb_usage_updated = pyqtSignal(object, object)
+    on_internal_storage_updated = pyqtSignal(list)
+    on_usb_connected = pyqtSignal(Path, list)
+    on_usb_disconnected = pyqtSignal()
+    on_storage_full = pyqtSignal(str)
+    on_internal_size_updated = pyqtSignal(object, object)
+    on_usb_size_updated = pyqtSignal(object, object)
 
     # CONSTRUCTOR
     #--------------------------------------------------------------------------------------
@@ -28,17 +28,18 @@ class StorageApp(QObject):
         self._manager = StorageManager(internal_root=Path.home() / "recordings")
         self._watcher = UsbWatcher(self._on_usb_connect, self._on_usb_disconnect)
         self._watcher.start()
-        self.refresh_internal()
+        self.refresh_internal_storage()
 
     # PUBLIC API
     #--------------------------------------------------------------------------------------
 
-    def refresh_internal(self):
+    def refresh_internal_storage(self):
+        
         self.model.internal.files = self._manager.list_files(self._manager.internal_root)
-        self.model.internal.used_bytes, _ = self._manager.get_usage(
-            self._manager.internal_root, self.model.internal.quota_bytes)
-        self.internal_updated.emit(self.model.internal.files)
-        self.internal_usage_updated.emit(self.model.internal.used_bytes, self.model.internal.quota_bytes)
+        self.model.internal.used_bytes, _ = self._manager.get_size(self._manager.internal_root, self.model.internal.quota_bytes)
+
+        self.on_internal_storage_updated.emit(self.model.internal.files)
+        self.on_internal_size_updated.emit(self.model.internal.used_bytes, self.model.internal.quota_bytes)
 
     #--------------------------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ class StorageApp(QObject):
         try:
             self._manager.ensure_space(self._manager.internal_root, self.model.internal.quota_bytes, reserve_bytes)
         except StorageFullError:
-            self.storage_full.emit("internal")
+            self.on_storage_full.emit("internal")
             raise
         return self._manager.internal_root / filename
 
@@ -57,7 +58,7 @@ class StorageApp(QObject):
         try:
             self._manager.ensure_space_on_device(self._manager.usb_root, entry.size_bytes)
         except StorageFullError:
-            self.storage_full.emit("usb")
+            self.on_storage_full.emit("usb")
             raise
         self._manager.copy_file(entry, self._manager.usb_root, progress_callback)
         self._refresh_usb()
@@ -73,14 +74,18 @@ class StorageApp(QObject):
         self.model.usb.used_bytes, self.model.usb.quota_bytes = self._manager.get_usage_with_device_capacity(self._manager.usb_root)
 
         # Send out QT signal
-        self.usb_connected.emit(self.model.usb_mount_path, self.model.usb.files)
-        self.usb_usage_updated.emit(self.model.usb.used_bytes, self.model.usb.quota_bytes)
+        self.on_usb_connected.emit(self.model.usb_mount_path, self.model.usb.files)
+        self.on_usb_size_updated.emit(self.model.usb.used_bytes, self.model.usb.quota_bytes)
 
     #--------------------------------------------------------------------------------------
 
     def delete_file(self, entry: FileEntry):
         self._manager.delete(entry)
-        self.refresh_internal()
+
+        if self._manager.usb_root is not None and self._manager.usb_root in entry.path.parents:
+            self._refresh_usb()
+        else:
+            self.refresh_internal_storage()
 
     # INTERNAL CALLBACKS
     #--------------------------------------------------------------------------------------
@@ -100,8 +105,8 @@ class StorageApp(QObject):
         self.model.usb.quota_bytes = quota
 
         # Send out QT Signal
-        self.usb_connected.emit(mount_path, files)
-        self.usb_usage_updated.emit(used, quota)
+        self.on_usb_connected.emit(mount_path, files)
+        self.on_usb_size_updated.emit(used, quota)
 
     #--------------------------------------------------------------------------------------
 
@@ -109,4 +114,4 @@ class StorageApp(QObject):
         self._manager.set_usb_root(None)
         self.model.usb = None
         self.model.usb_mount_path = None
-        self.usb_disconnected.emit()
+        self.on_usb_disconnected.emit()

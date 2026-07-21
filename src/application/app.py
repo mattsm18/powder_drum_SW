@@ -3,6 +3,10 @@
 # Author: Matthew Smith 22173112
 # Date: 6/05/26
 # Purpose: Central Application, Ties Apps to GUI
+# Functions as an EVENT -> FUNCTION map
+#
+# e.g Event on_start_recording_event (called by camera_tab UI)
+#     Function start_recording       (listened to by camera_app APPLICATION logic)
 
 # General Imports
 from pathlib import Path
@@ -33,20 +37,36 @@ class Application:
         self.window.showFullScreen()
 
     def _wire_camera(self):
+        
+        ### APP ---> UI ###
+        self.camera_app.on_new_frame.                       connect(self.window.camera_tab.update_frame)
+        self.camera_app.on_new_frame.                       connect(self.window.settings_tab.update_frame)
+        self.camera_app.on_recording_stopped.               connect(self.storage_app.refresh_internal_storage)
+        self.camera_app.on_photo_taken.                     connect(self.storage_app.refresh_internal_storage)
+        
+        ### UI ---> APP ###
+        self.window.camera_tab.on_setting_change_event.     connect(self.camera_app.set_camera_setting)
+        self.window.camera_tab.on_start_recording_event.    connect(self.camera_app.start_recording)
+        self.window.camera_tab.on_stop_recording_event.     connect(self.camera_app.stop_recording)
+        self.window.camera_tab.on_start_streaming_event.    connect(self.camera_app.start_streaming)
+        self.window.camera_tab.on_stop_streaming_event.     connect(self.camera_app.stop_streaming)
+        self.window.camera_tab.on_take_photo_event.         connect(self.camera_app.take_photo)
 
-        self.camera_app.new_frame.connect(self.window.camera_tab.set_preview)
-        self.camera_app.new_frame.connect(self.window.settings_tab.set_preview)
-        self.camera_app.recording_stopped.connect(self.storage_app.refresh_internal)
-
-        self.window.camera_tab.camera_setting_changed.connect(self.camera_app.set_camera_setting)
-        self.window.camera_tab.start_recording.connect(self.camera_app.start_recording)
-        self.window.camera_tab.stop_recording.connect(self.camera_app.stop_recording)
-        self.window.camera_tab.start_streaming.connect(self.camera_app.start_streaming)
-        self.window.camera_tab.stop_streaming.connect(self.camera_app.stop_streaming)
-        self.window.camera_tab.take_photo.connect(self.camera_app.take_photo)
-
-        self.window.settings_tab.camera_setting_changed.connect(self.camera_app.set_camera_setting)
+        self.window.settings_tab.on_setting_change_event.   connect(self.camera_app.set_camera_setting)
         
 
     def _wire_storage(self):
-        self.storage_app.refresh_internal()
+    
+        ### APP ---> UI ###
+        self.storage_app.on_internal_storage_updated.   connect(self.window.storage_tab.set_internal_files)
+        self.storage_app.on_internal_size_updated.      connect(self.window.storage_tab.set_internal_size)
+        self.storage_app.on_usb_connected.              connect(self.window.storage_tab.set_usb_files)
+        self.storage_app.on_usb_disconnected.           connect(self.window.storage_tab.clear_usb_files)
+        self.storage_app.on_usb_size_updated.           connect(self.window.storage_tab.set_usb_size)
+        self.storage_app.on_storage_full.               connect(self.window.storage_tab.show_storage_full)
+
+        ### UI ---> APP ###
+        self.window.storage_tab.on_copy_to_usb_event.   connect(self.storage_app.copy_to_usb)
+        self.window.storage_tab.on_delete_event.        connect(self.storage_app.delete_file)
+    
+        self.storage_app.refresh_internal_storage()

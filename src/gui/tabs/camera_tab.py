@@ -19,12 +19,12 @@ ICON_HEIGHT = 56
 class CameraTab(QWidget):
 
     # Outbound Signals
-    camera_setting_changed = pyqtSignal(CameraSetting, object)
-    start_recording = pyqtSignal()
-    stop_recording = pyqtSignal()
-    take_photo = pyqtSignal()
-    start_streaming = pyqtSignal()
-    stop_streaming = pyqtSignal()
+    on_setting_change_event  = pyqtSignal(CameraSetting, object)
+    on_start_recording_event = pyqtSignal()
+    on_stop_recording_event  = pyqtSignal()
+    on_take_photo_event      = pyqtSignal()
+    on_start_streaming_event = pyqtSignal()
+    on_stop_streaming_event  = pyqtSignal()
 
     # CONSTRUCTOR
     #--------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ class CameraTab(QWidget):
     # PUBLIC API (slots)
     #--------------------------------------------------------------------------------------
 
-    def set_preview(self, frame: np.ndarray): self.preview.set_frame(frame)
+    def update_frame(self, frame: np.ndarray): self.preview.set_frame(frame)
 
     #--------------------------------------------------------------------------------------
     # Wiring / Signal emits
@@ -95,7 +95,7 @@ class CameraTab(QWidget):
 
     def _on_photo_pressed(self):
 
-        self.take_photo.emit()
+        self.on_take_photo_event.emit()
         self.preview.trigger_flash()
 
     #--------------------------------------------------------------------------------------
@@ -104,12 +104,12 @@ class CameraTab(QWidget):
 
         if self.record_button.isChecked(): 
 
-            self.start_recording.emit()
+            self.on_start_recording_event.emit()
             self.preview.set_recording(True)
 
         else: 
 
-            self.stop_recording.emit()
+            self.on_stop_recording_event.emit()
             self.preview.set_recording(False)
 
     #--------------------------------------------------------------------------------------
@@ -118,12 +118,12 @@ class CameraTab(QWidget):
 
         if self.stream_button.isChecked(): 
 
-            self.start_streaming.emit()
+            self.on_start_streaming_event.emit()
             self.preview.set_streaming(True)
 
         else: 
 
-            self.stop_streaming.emit()
+            self.on_stop_streaming_event.emit()
             self.preview.set_streaming(False)
 
     #--------------------------------------------------------------------------------------

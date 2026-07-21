@@ -22,7 +22,7 @@ from models.camera_model import CameraSetting, CameraSettings
 class SettingsTab(QWidget):
 
     serial_connection_state = pyqtSignal(bool)
-    camera_setting_changed  = pyqtSignal(CameraSetting, object)
+    on_setting_change_event  = pyqtSignal(CameraSetting, object)
     
     def __init__(self):
         super().__init__()
@@ -110,7 +110,7 @@ class SettingsTab(QWidget):
 
         for row in (auto_exposure_row, exposure_time_row, analogue_gain_row):
             exposure_layout.addWidget(row)
-            row.value_changed.connect(self.camera_setting_changed)
+            row.value_changed.connect(self.on_setting_change_event)
 
         layout.addWidget(exposure_group)
 
@@ -120,7 +120,7 @@ class SettingsTab(QWidget):
 
         auto_wb_row = BoolSettingRow(CameraSetting.AUTO_WHITE_BALANCE, "Auto White Balance", defaults.auto_white_balance)
         wb_layout.addWidget(auto_wb_row)
-        auto_wb_row.value_changed.connect(self.camera_setting_changed)
+        auto_wb_row.value_changed.connect(self.on_setting_change_event)
 
         layout.addWidget(wb_group)
 
@@ -133,7 +133,7 @@ class SettingsTab(QWidget):
 
         for row in (resolution_row, fps_row):
             capture_layout.addWidget(row)
-            row.value_changed.connect(self.camera_setting_changed)
+            row.value_changed.connect(self.on_setting_change_event)
 
         layout.addWidget(capture_group)
 
@@ -142,8 +142,7 @@ class SettingsTab(QWidget):
         scroll.setWidget(content)
         return scroll
 
-    def set_preview(self, frame):
-        self._camera_preview.set_frame(frame)
+    def update_frame(self, frame): self._camera_preview.set_frame(frame)
 
     # ──────────────────────────────────────────────────────
     # Vision Controls
